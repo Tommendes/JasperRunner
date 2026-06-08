@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Executar Relatório')}"></head>
+<body class="d-flex flex-column vh-100">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+<div th:replace="~{layout :: alerts}"></div>
+
+<div class="container-fluid flex-grow-1 overflow-auto">
+    <div class="row justify-content-center mt-4">
+        <div class="col-12 col-lg-9 col-xl-7">
+
+            <!-- Cabeçalho -->
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a th:href="${report.folder != null ? '/folders/' + report.folder.id : '/'}"
+                   class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h4 class="mb-0">
+                        <i class="bi bi-play-circle-fill text-primary me-2"></i>
+                        <span th:text="${report.name}">Relatório</span>
+                    </h4>
+                    <small class="text-muted" th:text="${report.description}"></small>
+                </div>
+            </div>
+
+            <!-- Formulário de execução -->
+            <form th:action="@{'/reports/' + ${report.id} + '/run'}" method="post"
+                  id="reportForm" onsubmit="showLoading()">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <!-- Card: Parâmetros -->
+                <div class="card shadow-sm mb-4" th:if="${not #lists.isEmpty(parameters)}">
+                    <div class="card-header fw-semibold">
+                        <i class="bi bi-sliders me-2"></i>Parâmetros do Relatório
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div th:each="param : ${parameters}" class="col-12 col-md-6">
+                                <!-- Checkbox (Boolean) -->
+                                <div th:if="${param.booleanType}" class="form-check mt-2">
+                                    <input type="checkbox" class="form-check-input"
+                                           th:name="${param.name}" th:id="${param.name}" value="true">
+                                    <label class="form-check-label" th:for="${param.name}">
+                                        <span th:text="${param.name}"></span>
+                                        <span th:if="${param.description}"
+                                              class="ms-1 text-muted small"
+                                              th:title="${param.description}">
+                                            <i class="bi bi-info-circle"></i>
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <!-- Inputs numéricos, texto, data -->
+                                <div th:unless="${param.booleanType}">
+                                    <label th:for="${param.name}" class="form-label small fw-semibold">
+                                        <span th:text="${param.name}"></span>
+                                        <span class="badge bg-light text-muted border ms-1"
+                                              th:text="${param.simpleTypeName}"></span>
+                                        <i th:if="${param.description}"
+                                           class="bi bi-info-circle text-muted ms-1"
+                                           th:title="${param.description}"
+                                           data-bs-toggle="tooltip"></i>
+                                    </label>
+                                    <input th:type="${param.inputType}"
+                                           class="form-control form-control-sm"
+                                           th:id="${param.name}"
+                                           th:name="${param.name}"
+                                           th:step="${param.numberType ? 'any' : null}"
+                                           autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sem parâmetros -->
+                <div class="card shadow-sm mb-4" th:if="${#lists.isEmpty(parameters)}">
+                    <div class="card-body text-center text-muted py-4">
+                        <i class="bi bi-sliders fs-2 d-block mb-2"></i>
+                        Este relatório não possui parâmetros de entrada.
+                    </div>
+                </div>
+
+                <!-- Card: Configurações de Execução -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header fw-semibold">
+                        <i class="bi bi-gear me-2"></i>Configurações de Execução
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Fonte de Dados -->
+                            <div class="col-12 col-md-7">
+                                <label for="datasourceId" class="form-label fw-semibold">
+                                    <i class="bi bi-database me-1"></i>Fonte de Dados
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="datasourceId" id="datasourceId"
+                                        class="form-select form-select-sm" required>
+                                    <option value="">— Selecione —</option>
+                                    <option th:each="ds : ${datasources}"
+                                            th:value="${ds.id}"
+                                            th:text="${ds.name}"></option>
+                                </select>
+                                <div class="form-text" th:if="${#lists.isEmpty(datasources)}">
+                                    <a th:href="@{/datasources/new}" class="text-warning">
+                                        <i class="bi bi-plus-circle me-1"></i>Nenhuma fonte cadastrada. Clique para criar.
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Formato de Saída -->
+                            <div class="col-12 col-md-5">
+                                <label for="outputFormat" class="form-label fw-semibold">
+                                    <i class="bi bi-file-earmark-arrow-down me-1"></i>Formato de Saída
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select name="outputFormat" id="outputFormat"
+                                        class="form-select form-select-sm" required>
+                                    <option th:each="fmt : ${formats}"
+                                            th:value="${fmt}"
+                                            th:text="${fmt}"
+                                            th:selected="${fmt == 'PDF'}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões -->
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <a th:href="${report.folder != null ? '/folders/' + report.folder.id : '/'}"
+                       class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg me-1"></i>Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4" id="btnExecutar">
+                        <span id="btnText"><i class="bi bi-play-fill me-1"></i>Executar Relatório</span>
+                        <span id="btnLoading" class="d-none">
+                            <span class="spinner-border spinner-border-sm me-1"></span>Gerando...
+                        </span>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{layout :: scripts}"></th:block>
+<script>
+    // Tooltips
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el =>
+        new bootstrap.Tooltip(el));
+
+    function showLoading() {
+        document.getElementById('btnText').classList.add('d-none');
+        document.getElementById('btnLoading').classList.remove('d-none');
+        document.getElementById('btnExecutar').disabled = true;
+        // Reabilita após 30s como fallback
+        setTimeout(() => {
+            document.getElementById('btnText').classList.remove('d-none');
+            document.getElementById('btnLoading').classList.add('d-none');
+            document.getElementById('btnExecutar').disabled = false;
+        }, 30000);
+    }
+</script>
+</body>
+</html>

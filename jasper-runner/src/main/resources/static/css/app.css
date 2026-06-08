@@ -1,0 +1,145 @@
+/* ═══════════════════════════════════════════════
+   JasperRunner — app.css
+   Tema inspirado no JasperServer Community Edition
+   ══════════════════════════════════════════════ */
+
+/* ─── Variáveis ─── */
+:root {
+    --jr-blue-dark:   #1a3554;
+    --jr-blue:        #1e4d8c;
+    --jr-blue-light:  #2c6fad;
+    --jr-sidebar-bg:  #f8f9fa;
+    --jr-sidebar-w:   260px;
+    --jr-toolbar-bg:  #ffffff;
+    --jr-active-bg:   #dbeafe;
+    --jr-active-color:#1e4d8c;
+}
+
+/* ─── Navbar ─── */
+.jr-navbar {
+    background-color: var(--jr-blue-dark) !important;
+    border-bottom: 3px solid var(--jr-blue-light);
+    min-height: 52px;
+}
+
+.jr-navbar .navbar-brand {
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+}
+
+.jr-navbar .nav-link {
+    color: rgba(255,255,255,.85) !important;
+    font-size: .875rem;
+    padding: .4rem .8rem !important;
+    border-radius: 4px;
+    transition: background .15s;
+}
+
+.jr-navbar .nav-link:hover,
+.jr-navbar .nav-link:focus {
+    background-color: rgba(255,255,255,.12);
+    color: #fff !important;
+}
+
+/* ─── Toolbar ─── */
+.jr-toolbar {
+    background-color: var(--jr-toolbar-bg);
+    min-height: 44px;
+    flex-shrink: 0;
+}
+
+.jr-toolbar .vr {
+    height: 24px;
+    align-self: center;
+    opacity: .2;
+}
+
+/* ─── Sidebar ─── */
+.jr-sidebar {
+    width: var(--jr-sidebar-w);
+    min-width: var(--jr-sidebar-w);
+    background-color: var(--jr-sidebar-bg);
+    flex-shrink: 0;
+}
+
+.jr-folder-item {
+    cursor: pointer;
+    transition: background .12s;
+    user-select: none;
+    font-size: .875rem;
+}
+
+.jr-folder-item:hover {
+    background-color: #e9ecef;
+}
+
+.jr-folder-item.active {
+    background-color: var(--jr-active-bg);
+    color: var(--jr-active-color);
+    font-weight: 600;
+}
+
+.jr-folder-item.active a {
+    color: var(--jr-active-color) !important;
+}
+
+.jr-folder-item a {
+    color: #343a40;
+}
+
+.jr-toggle {
+    width: 16px;
+    flex-shrink: 0;
+}
+
+/* ─── Tabela de Relatórios ─── */
+#reportsTable tbody tr:hover {
+    cursor: pointer;
+}
+
+#reportsTable tbody tr.table-active {
+    background-color: var(--jr-active-bg) !important;
+}
+
+/* ─── Cabeçalho de Cards ─── */
+.card-header {
+    background-color: #f0f4f8;
+    font-size: .875rem;
+}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb {
+    font-size: .85rem;
+}
+
+/* ─── Badges de tipo de parâmetro ─── */
+.badge.bg-light {
+    font-size: .7rem;
+    border-color: #dee2e6 !important;
+}
+
+/* ─── Utilitários ─── */
+.font-monospace {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: .875rem;
+}
+
+/* ─── Scrollbar customizada (browsers webkit) ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+/* ─── Responsivo ─── */
+@media (max-width: 768px) {
+    .jr-sidebar {
+        width: 200px;
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .jr-sidebar {
+        display: none !important;
+    }
+}

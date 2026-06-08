@@ -1,0 +1,32 @@
+[Unit]
+Description=JasperRunner - Servidor de Relatórios JasperReports
+After=network.target
+
+[Service]
+Type=simple
+User=jasperrunner
+Group=jasperrunner
+
+WorkingDirectory=/opt/jasperrunner
+ExecStart=/usr/bin/java -jar /opt/jasperrunner/jasper-runner.jar \
+    --spring.config.location=file:/opt/jasperrunner/application.yml
+
+# Reiniciar automaticamente em caso de falha
+Restart=on-failure
+RestartSec=10
+
+# Variáveis de ambiente
+Environment="JAVA_OPTS=-Xmx512m -Xms128m"
+
+# Logs são gerenciados pelo logback (configurado em application.yml)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=jasperrunner
+
+# Segurança
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/jasperrunner/data /opt/jasperrunner/reports /opt/jasperrunner/logs
+
+[Install]
+WantedBy=multi-user.target

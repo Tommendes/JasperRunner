@@ -1,0 +1,40 @@
+server:
+  port: 8090
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/jasperrunner
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ''
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+  h2:
+    console:
+      enabled: false
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  thymeleaf:
+    cache: false
+
+jasperrunner:
+  reports-root-path: ./reports
+  admin-user: admin
+  admin-password: changeme
+  encryption-key: JasperRunner@2024$SecretKey!
+
+logging:
+  level:
+    com.seudominio.jasperrunner: DEBUG
+    net.sf.jasperreports: WARN
+    org.springframework.security: WARN
+  file:
+    name: ./logs/jasper-runner.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

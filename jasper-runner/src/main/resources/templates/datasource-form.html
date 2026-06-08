@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head(${editing ? 'Editar Fonte de Dados' : 'Nova Fonte de Dados'})}"></head>
+<body class="d-flex flex-column vh-100">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+<div th:replace="~{layout :: alerts}"></div>
+
+<div class="container-fluid flex-grow-1 overflow-auto">
+    <div class="row justify-content-center mt-4">
+        <div class="col-12 col-lg-8 col-xl-6">
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a th:href="@{/datasources}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h4 class="mb-0" th:text="${editing ? 'Editar Fonte de Dados' : 'Nova Fonte de Dados'}">
+                    Fonte de Dados
+                </h4>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Formulário: POST para /datasources (novo) ou /datasources/{id} (edição) -->
+                    <form th:action="${editing ? '/datasources/' + datasource.id : '/datasources'}"
+                          method="post" id="dsForm">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                        <div class="row g-3">
+                            <!-- Nome -->
+                            <div class="col-12 col-md-6">
+                                <label for="name" class="form-label fw-semibold">
+                                    Nome <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="name" name="name" class="form-control"
+                                       th:value="${datasource.name}" required maxlength="100">
+                            </div>
+
+                            <!-- Descrição -->
+                            <div class="col-12 col-md-6">
+                                <label for="description" class="form-label fw-semibold">Descrição</label>
+                                <input type="text" id="description" name="description" class="form-control"
+                                       th:value="${datasource.description}" maxlength="200">
+                            </div>
+
+                            <!-- Driver JDBC -->
+                            <div class="col-12">
+                                <label for="driverClassName" class="form-label fw-semibold">
+                                    Driver JDBC <span class="text-danger">*</span>
+                                </label>
+                                <select id="driverClassName" name="driverClassName"
+                                        class="form-select" onchange="fillUrl(this)" required>
+                                    <option value="">— Selecione o driver —</option>
+                                    <option th:each="opt : ${driverOptions}"
+                                            th:value="${opt[0]}"
+                                            th:text="${opt[1]}"
+                                            th:selected="${datasource.driverClassName == opt[0]}"></option>
+                                    <option value="custom">Outro (personalizado)</option>
+                                </select>
+                            </div>
+
+                            <!-- Driver personalizado -->
+                            <div class="col-12" id="customDriverRow"
+                                 th:style="${datasource.driverClassName != null
+                                            and !#strings.isEmpty(datasource.driverClassName)
+                                            and !#lists.isEmpty(#arrays.toList(driverOptions))
+                                            ? '' : 'display:none'}">
+                                <label for="customDriver" class="form-label fw-semibold">Classe do Driver</label>
+                                <input type="text" id="customDriver" class="form-control"
+                                       th:value="${datasource.driverClassName}"
+                                       placeholder="ex: com.meu.driver.Driver">
+                            </div>
+
+                            <!-- URL JDBC -->
+                            <div class="col-12">
+                                <label for="url" class="form-label fw-semibold">
+                                    URL JDBC <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="url" name="url" class="form-control font-monospace"
+                                       th:value="${datasource.url}"
+                                       placeholder="jdbc:postgresql://host:5432/banco"
+                                       required maxlength="500">
+                                <div class="form-text" id="urlExample"></div>
+                            </div>
+
+                            <!-- Usuário -->
+                            <div class="col-12 col-md-6">
+                                <label for="username" class="form-label fw-semibold">Usuário</label>
+                                <input type="text" id="username" name="username" class="form-control"
+                                       th:value="${datasource.username}" autocomplete="username">
+                            </div>
+
+                            <!-- Senha -->
+                            <div class="col-12 col-md-6">
+                                <label for="rawPassword" class="form-label fw-semibold">
+                                    Senha
+                                    <span th:if="${editing}" class="text-muted small fw-normal">
+                                        (deixe em branco para manter)
+                                    </span>
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" id="rawPassword" name="rawPassword"
+                                           class="form-control" autocomplete="new-password">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                            onclick="togglePassword()">
+                                        <i class="bi bi-eye" id="pwdIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        <hr class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="button" class="btn btn-outline-info"
+                                        onclick="testConnectionForm()">
+                                    <i class="bi bi-lightning-charge me-1"></i>Testar Conexão
+                                </button>
+                                <span id="testResult" class="ms-2 small"></span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/datasources}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-lg me-1"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-floppy me-1"></i>Salvar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{layout :: scripts}"></th:block>
+<script th:inline="javascript">
+    const editing = /*[[${editing}]]*/ false;
+    const dsId    = /*[[${datasource.id}]]*/ null;
+
+    const urlExamples = {
+        'org.postgresql.Driver':
+            'jdbc:postgresql://localhost:5432/meu_banco',
+        'com.mysql.cj.jdbc.Driver':
+            'jdbc:mysql://localhost:3306/meu_banco?useSSL=false&serverTimezone=UTC',
+        'com.microsoft.sqlserver.jdbc.SQLServerDriver':
+            'jdbc:sqlserver://localhost:1433;databaseName=meu_banco',
+        'org.h2.Driver':
+            'jdbc:h2:file:./data/meu_banco'
+    };
+
+    function fillUrl(sel) {
+        const url = document.getElementById('url');
+        const ex  = document.getElementById('urlExample');
+        if (urlExamples[sel.value]) {
+            if (!url.value) url.value = urlExamples[sel.value];
+            ex.textContent = 'Exemplo: ' + urlExamples[sel.value];
+        } else {
+            ex.textContent = '';
+        }
+    }
+
+    function togglePassword() {
+        const input = document.getElementById('rawPassword');
+        const icon  = document.getElementById('pwdIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+
+    function testConnectionForm() {
+        const result = document.getElementById('testResult');
+
+        if (editing && dsId) {
+            result.textContent = 'Testando...';
+            result.className = 'ms-2 small text-muted';
+
+            fetch('/datasources/' + dsId + '/test', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    result.textContent = data.success ? '✓ ' + data.message : '✗ ' + data.message;
+                    result.className = 'ms-2 small ' + (data.success ? 'text-success' : 'text-danger');
+                })
+                .catch(() => {
+                    result.textContent = '✗ Erro ao testar conexão';
+                    result.className = 'ms-2 small text-danger';
+                });
+        } else {
+            result.textContent = 'Salve primeiro para testar a conexão.';
+            result.className = 'ms-2 small text-warning';
+        }
+    }
+
+    // Inicializa exemplo de URL se tiver driver selecionado
+    const sel = document.getElementById('driverClassName');
+    if (sel.value && urlExamples[sel.value]) {
+        document.getElementById('urlExample').textContent = 'Exemplo: ' + urlExamples[sel.value];
+    }
+</script>
+</body>
+</html>
