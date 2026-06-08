@@ -1,0 +1,172 @@
+{
+  "info": {
+    "name": "JasperRunner API",
+    "description": "Collection Postman v2.1 para JasperRunner com exemplos de login, reports e datasources.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8090" },
+    { "key": "username", "value": "admin" },
+    { "key": "password", "value": "changeme" },
+    { "key": "csrfToken", "value": "" },
+    { "key": "reportId", "value": "1" },
+    { "key": "datasourceId", "value": "1" },
+    { "key": "folderId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Auth (Sessao)",
+      "item": [
+        {
+          "name": "GET /login (captura CSRF)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();",
+                  "const m = html.match(/name=\\\"_csrf\\\"\\s+value=\\\"([^\\\"]+)\\\"/);",
+                  "pm.test('CSRF encontrado', function () { pm.expect(m).to.not.equal(null); });",
+                  "if (m && m[1]) pm.collectionVariables.set('csrfToken', m[1]);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/login"
+          }
+        },
+        {
+          "name": "POST /login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                { "key": "username", "value": "{{username}}", "type": "text" },
+                { "key": "password", "value": "{{password}}", "type": "text" },
+                { "key": "_csrf", "value": "{{csrfToken}}", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "GET /api/reports",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reports"
+          }
+        },
+        {
+          "name": "GET /api/reports/{id}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reports/{{reportId}}"
+          }
+        },
+        {
+          "name": "POST /api/reports (multipart upload)",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "file", "type": "file", "src": "" },
+                { "key": "name", "value": "meuRelatorio", "type": "text" },
+                { "key": "description", "value": "Upload via Postman", "type": "text" },
+                { "key": "folderId", "value": "{{folderId}}", "type": "text" }
+              ]
+            },
+            "url": "{{baseUrl}}/api/reports"
+          }
+        },
+        {
+          "name": "POST /api/reports/{id}/run",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"parameters\": {\n    \"orgao\": \"Nome do Orgao / CNPJ\",\n    \"titulo\": \"Relatorio Geral da Folha de Pagamento\",\n    \"descricao\": \"Folha: 05/2025\",\n    \"dbSchema\": \"wwmgca_tapera_ativos\",\n    \"ano\": \"2026\",\n    \"mes\": \"04\",\n    \"complementar\": \"000\",\n    \"id_cad_servidores\": \"ff.id_cad_servidores in(2427)\",\n    \"id_cad_centros\": \"1=1\",\n    \"id_cad_departamentos\": \"1=1\",\n    \"id_cad_cargos\": \"1=1\",\n    \"id_cad_locais_trabalho\": \"1=1\",\n    \"orderBy\": \"ff.id_cad_centros, cs.nome, cs.matricula\"\n  },\n  \"datasourceId\": {{datasourceId}},\n  \"format\": \"PDF\"\n}"
+            },
+            "url": "{{baseUrl}}/api/reports/{{reportId}}/run"
+          }
+        },
+        {
+          "name": "DELETE /api/reports/{id}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/reports/{{reportId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Datasources",
+      "item": [
+        {
+          "name": "GET /api/datasources",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/datasources"
+          }
+        },
+        {
+          "name": "POST /api/datasources",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mega\",\n  \"description\": \"Conexao MySQL\",\n  \"driverClassName\": \"com.mysql.cj.jdbc.Driver\",\n  \"url\": \"jdbc:mysql://localhost:3306/seu_banco?useSSL=false&serverTimezone=UTC\",\n  \"username\": \"root\",\n  \"encryptedPassword\": \"sua_senha_aqui\"\n}"
+            },
+            "url": "{{baseUrl}}/api/datasources"
+          }
+        },
+        {
+          "name": "PUT /api/datasources/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mega\",\n  \"description\": \"Conexao MySQL atualizada\",\n  \"driverClassName\": \"com.mysql.cj.jdbc.Driver\",\n  \"url\": \"jdbc:mysql://localhost:3306/seu_banco?useSSL=false&serverTimezone=UTC\",\n  \"username\": \"root\",\n  \"encryptedPassword\": \"nova_senha\"\n}"
+            },
+            "url": "{{baseUrl}}/api/datasources/{{datasourceId}}"
+          }
+        },
+        {
+          "name": "POST /api/datasources/{id}/test",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/datasources/{{datasourceId}}/test"
+          }
+        },
+        {
+          "name": "DELETE /api/datasources/{id}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/datasources/{{datasourceId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

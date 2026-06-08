@@ -1,14 +1,170 @@
-2026-06-08 18:09:19 [http-nio-8090-exec-2] DEBUG c.s.j.service.ReportService - Carregando .jasper pré-compilado: /home/tommendes/JavaProjects/JasperServer/jasper-runner/./reports/contracheque/contracheque.jasper
-2026-06-08 18:09:26 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - Gerando relatório 'contracheque' no formato 'PDF' com 15 parâmetro(s)
-2026-06-08 18:09:27 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - locateFile: '../templates/header01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/header01.jasper'
-2026-06-08 18:09:27 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - locateFile: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/header01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/header01.jasper'
-2026-06-08 18:09:27 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - Fallback getResource carregou subrelatório: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/header01.jasper'
-2026-06-08 18:09:27 [resumoGeral subreports #1] DEBUG c.s.j.service.ReportService - locateFile: 'https://api-folhas.mgcash.app.br/arquivos/view/tapera_ativos/10' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/contracheque/https:/api-folhas.mgcash.app.br/arquivos/view/tapera_ativos/10'
-2026-06-08 18:09:27 [resumoGeral subreports #1] DEBUG c.s.j.service.ReportService - locateFile: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates'
-2026-06-08 18:09:28 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - locateFile: 'contrachequeRubricas.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/contracheque/contrachequeRubricas.jasper'
-2026-06-08 18:09:28 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - locateFile: 'contrachequeRubricas.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/contracheque/contrachequeRubricas.jasper'
-2026-06-08 18:09:28 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - Fallback getResource carregou subrelatório: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/contracheque/contrachequeRubricas.jasper'
-2026-06-08 18:09:28 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - locateFile: '../templates/headerServidor01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper'
-2026-06-08 18:09:28 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - locateFile: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper'
-2026-06-08 18:09:28 [http-nio-8090-exec-7] DEBUG c.s.j.service.ReportService - Fallback getResource carregou subrelatório: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper'
-2026-06-08 18:09:29 [http-nio-8090-exec-7] WARN  n.s.j.engine.fonts.FontUtil - Font 'Calibri' is not available to the JVM. For more details, see http://jasperreports.sourceforge.net/api/net/sf/jasperreports/engine/util/JRFontNotFoundException.html
+2026-06-08 18:20:32 [main] INFO  c.s.j.JasperRunnerApplication - Starting JasperRunnerApplication v1.0.0 using Java 26.0.1 with PID 222406 (/home/tommendes/JavaProjects/JasperServer/jasper-runner/target/jasper-runner-1.0.0.jar started by tommendes in /home/tommendes/JavaProjects/JasperServer/jasper-runner)
+2026-06-08 18:20:32 [main] DEBUG c.s.j.JasperRunnerApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-06-08 18:20:32 [main] INFO  c.s.j.JasperRunnerApplication - No active profile set, falling back to 1 default profile: "default"
+2026-06-08 18:20:33 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-08 18:20:34 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 106 ms. Found 3 JPA repository interfaces.
+2026-06-08 18:20:34 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8090 (http)
+2026-06-08 18:20:34 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-06-08 18:20:34 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-06-08 18:20:34 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-06-08 18:20:34 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2275 ms
+2026-06-08 18:20:35 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-08 18:20:35 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-06-08 18:20:35 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-06-08 18:20:35 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-08 18:20:35 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-06-08 18:20:36 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:file:./data/jasperrunner user=SA
+2026-06-08 18:20:36 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-06-08 18:20:37 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-08 18:20:38 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-08 18:20:39 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-06-08 18:20:41 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8090 (http) with context path ''
+2026-06-08 18:20:41 [main] INFO  c.s.j.JasperRunnerApplication - Started JasperRunnerApplication in 9.183 seconds (process running for 9.819)
+2026-06-08 18:20:45 [http-nio-8090-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-08 18:20:45 [http-nio-8090-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-06-08 18:20:45 [http-nio-8090-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-06-08 18:21:36 [http-nio-8090-exec-7] ERROR c.s.j.c.api.ReportApiController - Erro no upload via API
+java.io.IOException: java.nio.file.FileSystemException: /home/tommendes/JavaProjects/JasperServer/jasper-runner/./reports: Is a directory
+	at org.apache.catalina.core.ApplicationPart.write(ApplicationPart.java:119)
+	at org.springframework.web.multipart.support.StandardMultipartHttpServletRequest$StandardMultipartFile.transferTo(StandardMultipartHttpServletRequest.java:265)
+	at com.seudominio.jasperrunner.service.ReportService.upload(ReportService.java:84)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:354)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:392)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:720)
+	at com.seudominio.jasperrunner.service.ReportService$$SpringCGLIB$$0.upload(<generated>)
+	at com.seudominio.jasperrunner.controller.api.ReportApiController.upload(ReportApiController.java:79)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:255)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:188)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:926)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:831)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:206)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:175)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:150)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1736)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:1516)
+Caused by: java.nio.file.FileSystemException: /home/tommendes/JavaProjects/JasperServer/jasper-runner/./reports: Is a directory
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:102)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:108)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:113)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newFileChannel(UnixFileSystemProvider.java:214)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:245)
+	at java.base/java.nio.file.spi.FileSystemProvider.newOutputStream(FileSystemProvider.java:426)
+	at java.base/java.nio.file.Files.newOutputStream(Files.java:215)
+	at org.apache.tomcat.util.http.fileupload.disk.DiskFileItem.write(DiskFileItem.java:376)
+	at org.apache.catalina.core.ApplicationPart.write(ApplicationPart.java:117)
+	... 117 common frames omitted
+2026-06-08 18:21:57 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - Carregando .jasper pré-compilado: /home/tommendes/JavaProjects/JasperServer/jasper-runner/./reports/contracheque/contracheque.jasper
+2026-06-08 18:21:58 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - Gerando relatório 'contracheque' no formato 'PDF' com 14 parâmetro(s)
+2026-06-08 18:21:58 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - locateFile: '../templates/header01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/header01.jasper'
+2026-06-08 18:21:58 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - locateFile: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/header01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/header01.jasper'
+2026-06-08 18:21:58 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - Fallback getResource carregou subrelatório: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/header01.jasper'
+2026-06-08 18:21:58 [resumoGeral subreports #1] DEBUG c.s.j.service.ReportService - locateFile: 'https://api-folhas.mgcash.app.br/arquivos/view/tapera_ativos/10' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/contracheque/https:/api-folhas.mgcash.app.br/arquivos/view/tapera_ativos/10'
+2026-06-08 18:21:58 [resumoGeral subreports #1] DEBUG c.s.j.service.ReportService - locateFile: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates'
+2026-06-08 18:21:59 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - locateFile: 'contrachequeRubricas.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/contracheque/contrachequeRubricas.jasper'
+2026-06-08 18:21:59 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - locateFile: 'contrachequeRubricas.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/contracheque/contrachequeRubricas.jasper'
+2026-06-08 18:21:59 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - Fallback getResource carregou subrelatório: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/contracheque/contrachequeRubricas.jasper'
+2026-06-08 18:21:59 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - locateFile: '../templates/headerServidor01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper'
+2026-06-08 18:21:59 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - locateFile: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper'
+2026-06-08 18:21:59 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - Fallback getResource carregou subrelatório: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper'
+2026-06-08 18:22:00 [http-nio-8090-exec-10] WARN  n.s.j.engine.fonts.FontUtil - Font 'Calibri' is not available to the JVM. For more details, see http://jasperreports.sourceforge.net/api/net/sf/jasperreports/engine/util/JRFontNotFoundException.html

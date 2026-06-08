@@ -1,0 +1,15 @@
+.git
+.gitignore
+.idea
+.vscode
+
+logs/
+data/
+reports/
+target/
+
+*.log
+*.iml
+README.md
+EASYPANEL-INSTRUCTIONS.md
+postman/
