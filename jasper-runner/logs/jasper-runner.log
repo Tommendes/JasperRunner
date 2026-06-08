@@ -168,3 +168,6 @@ Caused by: java.nio.file.FileSystemException: /home/tommendes/JavaProjects/Jaspe
 2026-06-08 18:21:59 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - locateFile: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper' → '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper'
 2026-06-08 18:21:59 [http-nio-8090-exec-10] DEBUG c.s.j.service.ReportService - Fallback getResource carregou subrelatório: '/home/tommendes/JavaProjects/JasperServer/jasper-runner/reports/templates/headerServidor01.jasper'
 2026-06-08 18:22:00 [http-nio-8090-exec-10] WARN  n.s.j.engine.fonts.FontUtil - Font 'Calibri' is not available to the JVM. For more details, see http://jasperreports.sourceforge.net/api/net/sf/jasperreports/engine/util/JRFontNotFoundException.html
+2026-06-08 18:23:07 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-08 18:23:07 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-06-08 18:23:07 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
