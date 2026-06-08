@@ -37,37 +37,39 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
-                            <div th:each="param : ${parameters}" class="col-12 col-md-6">
+                            <div th:each="rParam : ${parameters}" class="col-12 col-md-6">
                                 <!-- Checkbox (Boolean) -->
-                                <div th:if="${param.booleanType}" class="form-check mt-2">
+                                <div th:if="${rParam.booleanType}" class="form-check mt-2">
                                     <input type="checkbox" class="form-check-input"
-                                           th:name="${param.name}" th:id="${param.name}" value="true">
-                                    <label class="form-check-label" th:for="${param.name}">
-                                        <span th:text="${param.name}"></span>
-                                        <span th:if="${param.description}"
+                                           th:name="${rParam.name}" th:id="${rParam.name}" value="true"
+                                           th:checked="${'true' == rParam.defaultValueAsString}">
+                                    <label class="form-check-label" th:for="${rParam.name}">
+                                        <span th:text="${rParam.name}"></span>
+                                        <span th:if="${rParam.description}"
                                               class="ms-1 text-muted small"
-                                              th:title="${param.description}">
+                                              th:title="${rParam.description}">
                                             <i class="bi bi-info-circle"></i>
                                         </span>
                                     </label>
                                 </div>
 
                                 <!-- Inputs numéricos, texto, data -->
-                                <div th:unless="${param.booleanType}">
-                                    <label th:for="${param.name}" class="form-label small fw-semibold">
-                                        <span th:text="${param.name}"></span>
+                                <div th:unless="${rParam.booleanType}">
+                                    <label th:for="${rParam.name}" class="form-label small fw-semibold">
+                                        <span th:text="${rParam.name}"></span>
                                         <span class="badge bg-light text-muted border ms-1"
-                                              th:text="${param.simpleTypeName}"></span>
-                                        <i th:if="${param.description}"
+                                              th:text="${rParam.simpleTypeName}"></span>
+                                        <i th:if="${rParam.description}"
                                            class="bi bi-info-circle text-muted ms-1"
-                                           th:title="${param.description}"
+                                           th:title="${rParam.description}"
                                            data-bs-toggle="tooltip"></i>
                                     </label>
-                                    <input th:type="${param.inputType}"
+                                    <input th:type="${rParam.inputType}"
                                            class="form-control form-control-sm"
-                                           th:id="${param.name}"
-                                           th:name="${param.name}"
-                                           th:step="${param.numberType ? 'any' : null}"
+                                           th:id="${rParam.name}"
+                                           th:name="${rParam.name}"
+                                           th:value="${rParam.defaultValueAsString}"
+                                           th:step="${rParam.numberType ? 'any' : null}"
                                            autocomplete="off">
                                 </div>
                             </div>

@@ -196,9 +196,14 @@
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Arquivo JRXML <span class="text-danger">*</span></label>
-                        <input type="file" name="file" class="form-control" accept=".jrxml" required>
-                        <div class="form-text">Apenas arquivos .jrxml são aceitos.</div>
+                        <label class="form-label fw-semibold">Arquivo <span class="text-danger">*</span></label>
+                        <input type="file" name="file" class="form-control"
+                               accept=".jrxml,.jasper,.png,.jpg,.jpeg,.svg,.ttf" required>
+                        <div class="form-text">
+                            <strong>.jrxml</strong> — relatório principal &nbsp;|&nbsp;
+                            <strong>.jasper</strong> — subrelatório pré-compilado &nbsp;|&nbsp;
+                            imagens (.png, .jpg, .svg)
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Nome do Relatório</label>

@@ -85,8 +85,12 @@ public class ReportController {
             }
 
             ReportFolder folder = folderId != null ? folderService.findById(folderId).orElse(null) : null;
-            reportService.upload(file, name, description, folder);
-            ra.addFlashAttribute("success", "Relatório enviado com sucesso!");
+            ReportDefinition saved = reportService.upload(file, name, description, folder);
+            if (saved != null) {
+                ra.addFlashAttribute("success", "Relatório '" + saved.getName() + "' enviado com sucesso!");
+            } else {
+                ra.addFlashAttribute("success", "Recurso '" + file.getOriginalFilename() + "' enviado com sucesso!");
+            }
         } catch (IOException e) {
             log.error("Erro no upload de relatório", e);
             ra.addFlashAttribute("error", "Erro ao salvar arquivo: " + e.getMessage());
