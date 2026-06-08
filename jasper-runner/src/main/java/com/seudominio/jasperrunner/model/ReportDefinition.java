@@ -1,17 +1,12 @@
 package com.seudominio.jasperrunner.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "report_definitions")
-@Data
-@ToString(exclude = "folder")
-@EqualsAndHashCode(exclude = "folder")
 public class ReportDefinition {
 
     @Id
@@ -46,5 +41,42 @@ public class ReportDefinition {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getJrxmlPath() { return jrxmlPath; }
+    public void setJrxmlPath(String jrxmlPath) { this.jrxmlPath = jrxmlPath; }
+
+    public ReportFolder getFolder() { return folder; }
+    public void setFolder(ReportFolder folder) { this.folder = folder; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReportDefinition)) return false;
+        ReportDefinition that = (ReportDefinition) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() { return Objects.hash(id); }
+
+    @Override
+    public String toString() {
+        return "ReportDefinition{id=" + id + ", name='" + name + "'}";
     }
 }

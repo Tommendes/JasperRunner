@@ -1,11 +1,8 @@
 package com.seudominio.jasperrunner.dto;
 
-import lombok.Data;
-
 /**
  * Metadados de um parâmetro JasperReports para renderização do formulário dinâmico.
  */
-@Data
 public class ReportParameterInfo {
 
     private String name;
@@ -44,4 +41,16 @@ public class ReportParameterInfo {
         int lastDot = typeName.lastIndexOf('.');
         return lastDot >= 0 ? typeName.substring(lastDot + 1) : typeName;
     }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getTypeName() { return typeName; }
+    public void setTypeName(String typeName) { this.typeName = typeName; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getDefaultValueAsString() { return defaultValueAsString; }
+    public void setDefaultValueAsString(String v) { this.defaultValueAsString = v; }
 }

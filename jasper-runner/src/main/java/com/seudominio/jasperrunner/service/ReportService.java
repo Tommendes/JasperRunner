@@ -8,6 +8,7 @@ import com.seudominio.jasperrunner.model.ReportFolder;
 import com.seudominio.jasperrunner.repository.ReportDefinitionRepository;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
@@ -230,13 +231,22 @@ public class ReportService {
 
     private byte[] exportReport(JasperPrint jasperPrint, String format) throws JRException {
         return switch (format.toUpperCase()) {
-            case "PDF"  -> JasperExportManager.exportReportToPdfBytes(jasperPrint);
+            case "PDF"  -> exportPdf(jasperPrint);
             case "XLSX" -> exportXlsx(jasperPrint);
             case "HTML" -> exportHtml(jasperPrint);
             case "DOCX" -> exportDocx(jasperPrint);
             case "CSV"  -> exportCsv(jasperPrint);
             default -> throw new IllegalArgumentException("Formato de saída não suportado: " + format);
         };
+    }
+
+    private byte[] exportPdf(JasperPrint jasperPrint) throws JRException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        JRPdfExporter exporter = new JRPdfExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(out));
+        exporter.exportReport();
+        return out.toByteArray();
     }
 
     private byte[] exportXlsx(JasperPrint jasperPrint) throws JRException {

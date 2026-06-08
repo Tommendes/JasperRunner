@@ -1,0 +1,26 @@
+2026-06-08 16:44:52 [main] INFO  c.s.j.JasperRunnerApplication - Starting JasperRunnerApplication v1.0.0 using Java 26.0.1 with PID 181468 (/home/tommendes/JavaProjects/JasperServer/jasper-runner/target/jasper-runner-1.0.0.jar started by tommendes in /home/tommendes/JavaProjects/JasperServer/jasper-runner)
+2026-06-08 16:44:52 [main] DEBUG c.s.j.JasperRunnerApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-06-08 16:44:52 [main] INFO  c.s.j.JasperRunnerApplication - No active profile set, falling back to 1 default profile: "default"
+2026-06-08 16:44:54 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-08 16:44:54 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 70 ms. Found 3 JPA repository interfaces.
+2026-06-08 16:44:55 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8090 (http)
+2026-06-08 16:44:55 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-06-08 16:44:55 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-06-08 16:44:55 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-06-08 16:44:55 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2162 ms
+2026-06-08 16:44:55 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-08 16:44:55 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-06-08 16:44:55 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-06-08 16:44:56 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-08 16:44:56 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-06-08 16:44:57 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:file:./data/jasperrunner user=SA
+2026-06-08 16:44:57 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-06-08 16:44:59 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-08 16:44:59 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-08 16:45:00 [main] INFO  o.s.b.a.w.s.WelcomePageHandlerMapping - Adding welcome page template: index
+2026-06-08 16:45:02 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8090 (http) with context path ''
+2026-06-08 16:45:02 [main] INFO  c.s.j.JasperRunnerApplication - Started JasperRunnerApplication in 10.122 seconds (process running for 10.905)
+2026-06-08 16:45:05 [http-nio-8090-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-08 16:45:05 [http-nio-8090-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-06-08 16:45:05 [http-nio-8090-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 8 ms
+2026-06-08 16:46:47 [http-nio-8090-exec-9] INFO  c.s.j.service.DatasourceService - Conexão testada com sucesso para 'Mega': MySQL 11.8.6-MariaDB-ubu2404

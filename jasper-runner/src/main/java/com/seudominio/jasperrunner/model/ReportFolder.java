@@ -1,19 +1,14 @@
 package com.seudominio.jasperrunner.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "report_folders")
-@Data
-@ToString(exclude = {"parent", "children", "reports"})
-@EqualsAndHashCode(exclude = {"parent", "children", "reports"})
 public class ReportFolder {
 
     @Id
@@ -52,5 +47,45 @@ public class ReportFolder {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public ReportFolder getParent() { return parent; }
+    public void setParent(ReportFolder parent) { this.parent = parent; }
+
+    public List<ReportFolder> getChildren() { return children; }
+    public void setChildren(List<ReportFolder> children) { this.children = children; }
+
+    public List<ReportDefinition> getReports() { return reports; }
+    public void setReports(List<ReportDefinition> reports) { this.reports = reports; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReportFolder)) return false;
+        ReportFolder that = (ReportFolder) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() { return Objects.hash(id); }
+
+    @Override
+    public String toString() {
+        return "ReportFolder{id=" + id + ", name='" + name + "'}";
     }
 }
