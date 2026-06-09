@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head(${pageTitle})}"></head>
+<body class="d-flex flex-column vh-100">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+<div th:replace="~{layout :: alerts}"></div>
+
+<main class="container py-4 flex-grow-1">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a th:href="@{/users}">Usuários</a></li>
+                    <li class="breadcrumb-item active" th:text="${editing} ? 'Editar' : 'Novo'">Novo</li>
+                </ol>
+            </nav>
+
+            <h4 class="mb-4">
+                <i th:class="${editing} ? 'bi bi-pencil me-2' : 'bi bi-person-plus me-2'"></i>
+                <span th:text="${pageTitle}">Usuário</span>
+            </h4>
+
+            <div th:unless="${editing}" class="alert alert-info" role="alert">
+                <i class="bi bi-envelope-check me-2"></i>
+                A senha <strong>não</strong> é definida aqui. Após criar a conta, o sistema envia um e-mail de boas-vindas
+                com link para o usuário criar a própria senha.
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form th:action="${editing} ? @{/users/{id}/edit(id=${userId})} : @{/users/new}"
+                          method="post" th:object="${userCreateForm}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold">Nome <span class="text-danger">*</span></label>
+                            <input type="text" id="name" class="form-control" th:field="*{name}"
+                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold">E-mail <span class="text-danger">*</span></label>
+                            <input type="email" id="email" class="form-control" th:field="*{email}"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'">
+                            <div class="form-text" th:unless="${editing}">
+                                O link para criar a senha será enviado para este endereço.
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-semibold">Usuário <span class="text-danger">*</span></label>
+                            <input type="text" id="username" class="form-control" th:field="*{username}"
+                                   autocomplete="off"
+                                   th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'">
+                            <div class="form-text">Letras, números, ponto, hífen e sublinhado (3–64 caracteres).</div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="role" class="form-label fw-semibold">Perfil <span class="text-danger">*</span></label>
+                            <select id="role" class="form-select" th:field="*{role}"
+                                    th:classappend="${#fields.hasErrors('role')} ? 'is-invalid'">
+                                <option th:each="r : ${roles}" th:value="${r}"
+                                        th:text="${r.name() == 'ADMIN'} ? 'Administrador' : 'Usuário'"></option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enabled" th:field="*{enabled}">
+                                <label class="form-check-label" for="enabled">Conta ativa</label>
+                            </div>
+                            <div class="form-text">Usuários inativos não conseguem fazer login.</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>
+                                <span th:text="${editing} ? 'Salvar alterações' : 'Criar e enviar e-mail'">Salvar</span>
+                            </button>
+                            <a th:href="@{/users}" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

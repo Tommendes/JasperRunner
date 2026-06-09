@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .requestMatchers("/webjars/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                 .requestMatchers("/login", "/login?logout", "/login?error").permitAll()
                 .requestMatchers("/password/forgot", "/password/reset").permitAll()
+                .requestMatchers("/users/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .userDetailsService(userDetailsService)

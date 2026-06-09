@@ -55,7 +55,12 @@
                                             th:value="${opt[0]}"
                                             th:text="${opt[1]}"
                                             th:selected="${datasource.driverClassName == opt[0]}"></option>
-                                    <option value="custom">Outro (personalizado)</option>
+                                    <option value="custom"
+                                            th:selected="${datasource.driverClassName != null
+                                                         and !#strings.isEmpty(datasource.driverClassName)
+                                                         and !#lists.contains(driverOptions.![0], datasource.driverClassName)}">
+                                        Outro (personalizado)
+                                    </option>
                                 </select>
                             </div>
 
@@ -63,7 +68,7 @@
                             <div class="col-12" id="customDriverRow"
                                  th:style="${datasource.driverClassName != null
                                             and !#strings.isEmpty(datasource.driverClassName)
-                                            and !#lists.isEmpty(#arrays.toList(driverOptions))
+                                            and !#lists.contains(driverOptions.![0], datasource.driverClassName)
                                             ? '' : 'display:none'}">
                                 <label for="customDriver" class="form-label fw-semibold">Classe do Driver</label>
                                 <input type="text" id="customDriver" class="form-control"

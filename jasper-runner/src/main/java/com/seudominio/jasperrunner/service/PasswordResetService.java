@@ -49,16 +49,32 @@ public class PasswordResetService {
             return;
         }
 
+        String resetLink = buildResetLink(createToken(user));
+        emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
+    }
+
+    /** Envia e-mail de boas-vindas com link para o novo usuário definir a senha. */
+    @Transactional
+    public void sendWelcomePasswordSetup(User user) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Usuário sem e-mail cadastrado");
+        }
+
+        String setupLink = buildResetLink(createToken(user));
+        emailService.sendWelcomeEmail(user.getEmail(), user.getName(), setupLink);
+    }
+
+    private PasswordResetToken createToken(User user) {
         PasswordResetToken token = new PasswordResetToken();
         token.setUserId(user.getId());
         token.setToken(UUID.randomUUID().toString());
         token.setExpiresAt(AppTimeZone.nowUtc().plusMinutes(properties.getPasswordResetExpirationMinutes()));
-        tokenRepository.save(token);
+        return tokenRepository.save(token);
+    }
 
-        String resetLink = properties.getBaseUrl().replaceAll("/$", "")
+    private String buildResetLink(PasswordResetToken token) {
+        return properties.getBaseUrl().replaceAll("/$", "")
             + "/password/reset?token=" + token.getToken();
-
-        emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
     }
 
     @Transactional(readOnly = true)

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Usuários')}"></head>
+<body class="d-flex flex-column vh-100">
+
+<nav th:replace="~{layout :: navbar}"></nav>
+<div th:replace="~{layout :: alerts}"></div>
+
+<div class="container-fluid flex-grow-1 overflow-auto p-4">
+
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h4 class="mb-0">
+            <i class="bi bi-people-fill me-2 text-primary"></i>Usuários
+        </h4>
+        <a th:href="@{/users/new}" class="btn btn-primary">
+            <i class="bi bi-person-plus me-1"></i>Novo Usuário
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small text-muted">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Usuário</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Status</th>
+                        <th>Criado em</th>
+                        <th width="80">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-person-x fs-2 d-block mb-2"></i>
+                            Nenhum usuário cadastrado.
+                        </td>
+                    </tr>
+                    <tr th:each="u : ${users}">
+                        <td th:text="${u.name}">Nome</td>
+                        <td>
+                            <i class="bi bi-person-badge me-1 text-primary"></i>
+                            <span th:text="${u.username}">usuario</span>
+                        </td>
+                        <td class="small text-muted" th:text="${u.email}">email</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${u.role.name() == 'ADMIN'} ? ' bg-danger' : ' bg-secondary'"
+                                  th:text="${u.role.name() == 'ADMIN'} ? 'Administrador' : 'Usuário'"></span>
+                        </td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${u.enabled} ? ' bg-success' : ' bg-warning text-dark'"
+                                  th:text="${u.enabled} ? 'Ativo' : 'Inativo'"></span>
+                        </td>
+                        <td class="small text-muted"
+                            th:text="${T(com.seudominio.jasperrunner.util.AppTimeZone).formatStoredUtc(u.createdAt)}"></td>
+                        <td>
+                            <a th:href="@{'/users/' + ${u.id} + '/edit'}"
+                               class="btn btn-sm btn-outline-secondary py-0 px-2" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{layout :: scripts}"></th:block>
+</body>
+</html>

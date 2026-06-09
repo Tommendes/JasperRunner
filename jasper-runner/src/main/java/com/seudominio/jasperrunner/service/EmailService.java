@@ -44,4 +44,34 @@ public class EmailService {
         mailSender.send(message);
         log.info("E-mail de recuperação enviado para {}", to);
     }
+
+    public void sendWelcomeEmail(String to, String name, String setupLink) {
+        if (fromAddress == null || fromAddress.isBlank()) {
+            log.warn("MAILER_USER não configurado — e-mail de boas-vindas não enviado para {}", to);
+            return;
+        }
+
+        String greeting = name != null && !name.isBlank() ? name : "novo usuário";
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromAddress);
+        message.setTo(to);
+        message.setSubject("JasperRunner — Bem-vindo(a)");
+        message.setText("""
+            Olá, %s!
+
+            Sua conta no JasperRunner foi criada.
+
+            Acesse o link abaixo para definir sua senha de acesso (válido por tempo limitado):
+
+            %s
+
+            Após definir a senha, utilize seu nome de usuário para entrar no sistema.
+
+            Se você não esperava este e-mail, ignore esta mensagem.
+            """.formatted(greeting, setupLink));
+
+        mailSender.send(message);
+        log.info("E-mail de boas-vindas enviado para {}", to);
+    }
 }
