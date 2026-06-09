@@ -8,6 +8,21 @@ O código-fonte da aplicação fica em `jasper-runner/`. Este repositório inclu
 
 ---
 
+## Objetivo
+O objetivo deste projeto é criar uma aplicação que permita a execução de relatórios JasperReports (`.jrxml`) em um servidor VPS Ubuntu ou container Docker.
+
+## Tecnologias
+
+- Java
+- Spring Boot
+- JasperReports
+- Thymeleaf
+- MySQL/MariaDB
+- Maven
+- Docker
+- Easypanel (opcional)
+- Postman (opcional)
+
 ## Funcionalidades
 
 ### Repositório de relatórios
