@@ -10,7 +10,7 @@ public class JasperRunnerProperties {
     private String adminPassword = "changeme";
     private String adminName = "Administrator";
     private String adminEmail = "admin@localhost";
-    private String baseUrl = "http://localhost:8090";
+    private String baseUrl = "";
     private int passwordResetExpirationMinutes = 30;
     private String encryptionKey = "JasperRunner@2024$SecretKey!";
 

@@ -1,5 +1,6 @@
 server:
   port: 8090
+  forward-headers-strategy: framework
 
 spring:
   jackson:
@@ -48,7 +49,7 @@ jasperrunner:
   admin-password: changeme
   admin-name: Administrator
   admin-email: admin@localhost
-  base-url: ${APP_BASE_URL:http://localhost:8090}
+  base-url: ${APP_BASE_URL:}
   password-reset-expiration-minutes: 30
   encryption-key: JasperRunner@2024$SecretKey!
 

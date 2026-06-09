@@ -21,17 +21,20 @@ public class PasswordResetService {
     private final EmailService emailService;
     private final UserService userService;
     private final JasperRunnerProperties properties;
+    private final ApplicationUrlService applicationUrlService;
 
     public PasswordResetService(UserRepository userRepository,
                                 PasswordResetTokenRepository tokenRepository,
                                 EmailService emailService,
                                 UserService userService,
-                                JasperRunnerProperties properties) {
+                                JasperRunnerProperties properties,
+                                ApplicationUrlService applicationUrlService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
         this.userService = userService;
         this.properties = properties;
+        this.applicationUrlService = applicationUrlService;
     }
 
     /**
@@ -73,7 +76,7 @@ public class PasswordResetService {
     }
 
     private String buildResetLink(PasswordResetToken token) {
-        return properties.getBaseUrl().replaceAll("/$", "")
+        return applicationUrlService.resolveBaseUrl()
             + "/password/reset?token=" + token.getToken();
     }
 

@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "JasperRunner API",
+    "name": "JasperRunner API Collection",
     "description": "Collection Postman v2.1 para JasperRunner. API REST usa HTTP Basic (apiUser/apiPass). Login de tela usa sessão (pasta Auth Sessao).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },

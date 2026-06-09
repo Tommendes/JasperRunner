@@ -86,7 +86,7 @@ Mapeie no EasyPanel para não perder dados em redeploy:
 
 ## 5. Domínio e HTTPS
 
-Configure o domínio no EasyPanel (ex: `relatorios.seudominio.com`) e ative HTTPS. Atualize `APP_BASE_URL` com a URL final.
+Configure o domínio no EasyPanel (ex: `relatorios.seudominio.com`) e ative HTTPS. Os links de e-mail passam a usar esse domínio automaticamente. `APP_BASE_URL` só é necessário como fallback opcional.
 
 ---
 
