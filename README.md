@@ -56,6 +56,28 @@ O objetivo deste projeto é criar uma aplicação que permita a execução de re
 
 ---
 
+## Principais telas
+
+### Biblioteca de relatórios
+
+Repositório com árvore de pastas, lista de arquivos `.jasper`/`.jrxml`, toolbar de ações (executar, copiar, colar, upload) e navegação por breadcrumb.
+
+![Biblioteca de relatórios](jasper-runner/src/main/resources/static/main-dash.png)
+
+### Fontes de dados JDBC
+
+Cadastro e manutenção das conexões JDBC usadas na execução dos relatórios, com teste de conexão, edição e exclusão.
+
+![Fontes de dados JDBC](jasper-runner/src/main/resources/static/datasources-dash.png)
+
+### Usuários
+
+Gestão de contas da aplicação: criação, edição, perfis (`ADMIN` / `USER`) e envio de e-mail de boas-vindas.
+
+![Gestão de usuários](jasper-runner/src/main/resources/static/users-dash.png)
+
+---
+
 ## Stack
 
 | Tecnologia        | Versão  |
