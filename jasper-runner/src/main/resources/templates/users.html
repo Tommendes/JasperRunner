@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{layout :: head('Usuários')}"></head>
 <body class="d-flex flex-column vh-100">
 
@@ -28,7 +29,7 @@
                         <th>Perfil</th>
                         <th>Status</th>
                         <th>Criado em</th>
-                        <th width="80">Ações</th>
+                        <th width="100">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,11 +58,20 @@
                         </td>
                         <td class="small text-muted"
                             th:text="${T(com.seudominio.jasperrunner.util.AppTimeZone).formatStoredUtc(u.createdAt)}"></td>
-                        <td>
+                        <td class="text-nowrap">
                             <a th:href="@{'/users/' + ${u.id} + '/edit'}"
                                class="btn btn-sm btn-outline-secondary py-0 px-2" title="Editar">
                                 <i class="bi bi-pencil"></i>
                             </a>
+                            <button th:if="${u.username != #authentication.name}"
+                                    type="button"
+                                    class="btn btn-sm btn-outline-danger py-0 px-2 ms-1"
+                                    title="Excluir"
+                                    th:data-id="${u.id}"
+                                    th:data-name="${u.name}"
+                                    onclick="confirmDeleteUser(this)">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
@@ -70,6 +80,38 @@
     </div>
 </div>
 
+<!-- Modal: excluir usuário -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-danger">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir o usuário <strong id="deleteUserName"></strong>?
+                <br><small class="text-muted">Esta ação não pode ser desfeita.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteUserForm" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <th:block th:replace="~{layout :: scripts}"></th:block>
+<script>
+    function confirmDeleteUser(btn) {
+        document.getElementById('deleteUserName').textContent = btn.dataset.name;
+        document.getElementById('deleteUserForm').action = '/users/' + btn.dataset.id + '/delete';
+        new bootstrap.Modal(document.getElementById('deleteUserModal')).show();
+    }
+</script>
 </body>
 </html>

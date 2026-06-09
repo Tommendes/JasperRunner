@@ -5,6 +5,7 @@ import com.seudominio.jasperrunner.dto.ProfileForm;
 import com.seudominio.jasperrunner.dto.UserCreateForm;
 import com.seudominio.jasperrunner.model.User;
 import com.seudominio.jasperrunner.model.UserRole;
+import com.seudominio.jasperrunner.repository.PasswordResetTokenRepository;
 import com.seudominio.jasperrunner.repository.UserRepository;
 import com.seudominio.jasperrunner.util.PasswordPolicy;
 import org.springframework.data.domain.Sort;
@@ -19,10 +20,14 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository,
+                       PasswordResetTokenRepository tokenRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -95,6 +100,16 @@ public class UserService {
         user.setEnabled(form.isEnabled());
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteByAdmin(Long id, String actorUsername) {
+        User user = findById(id);
+        if (user.getUsername().equals(actorUsername)) {
+            throw new IllegalArgumentException("Você não pode excluir sua própria conta");
+        }
+        tokenRepository.deleteByUserId(id);
+        userRepository.delete(user);
     }
 
     @Transactional

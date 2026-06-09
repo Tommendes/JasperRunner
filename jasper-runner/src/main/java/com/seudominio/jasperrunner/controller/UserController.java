@@ -72,6 +72,23 @@ public class UserController {
         }
     }
 
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable Long id,
+                         @AuthenticationPrincipal UserDetails principal,
+                         RedirectAttributes ra) {
+        try {
+            User user = userService.findById(id);
+            userService.deleteByAdmin(id, principal.getUsername());
+            ra.addFlashAttribute("success", "Usuário '" + user.getUsername() + "' excluído com sucesso.");
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            log.error("Erro ao excluir usuário {}", id, e);
+            ra.addFlashAttribute("error", "Erro ao excluir usuário: " + e.getMessage());
+        }
+        return "redirect:/users";
+    }
+
     @PostMapping("/{id}/edit")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("userCreateForm") UserCreateForm form,
