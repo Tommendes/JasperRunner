@@ -2,6 +2,8 @@ server:
   port: 8090
 
 spring:
+  jackson:
+    time-zone: America/Recife
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_DATABASE:jasper_runner}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,6 +18,8 @@ spring:
     open-in-view: false
     properties:
       hibernate:
+        jdbc:
+          time_zone: UTC
         boot:
           allow_jdbc_metadata_access: false
   servlet:
@@ -39,7 +43,7 @@ spring:
             enable: false
 
 jasperrunner:
-  reports-root-path: ./reports
+  reports-root-path: ${JASPERRUNNER_REPORTS_ROOT_PATH:./reports}
   admin-user: admin
   admin-password: changeme
   admin-name: Administrator
@@ -54,7 +58,7 @@ logging:
     net.sf.jasperreports: WARN
     org.springframework.security: WARN
   file:
-    name: ./logs/jasper-runner.log
+    name: ${LOGGING_FILE_NAME:./logs/jasper-runner.log}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

@@ -18,4 +18,6 @@ public interface ReportDefinitionRepository extends JpaRepository<ReportDefiniti
 
     @Query("SELECT r FROM ReportDefinition r LEFT JOIN FETCH r.folder WHERE r.id = :id")
     Optional<ReportDefinition> findByIdWithFolder(@Param("id") Long id);
+
+    Optional<ReportDefinition> findByJrxmlPath(String jrxmlPath);
 }

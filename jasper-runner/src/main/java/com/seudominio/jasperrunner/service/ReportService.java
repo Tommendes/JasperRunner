@@ -3,6 +3,7 @@ package com.seudominio.jasperrunner.service;
 import com.seudominio.jasperrunner.config.JasperRunnerProperties;
 import com.seudominio.jasperrunner.dto.FolderResource;
 import com.seudominio.jasperrunner.dto.ReportParameterInfo;
+import com.seudominio.jasperrunner.util.AppTimeZone;
 import com.seudominio.jasperrunner.model.DataSourceConfig;
 import com.seudominio.jasperrunner.model.ReportDefinition;
 import com.seudominio.jasperrunner.model.ReportFolder;
@@ -29,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.file.*;
+import java.time.LocalDateTime;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -88,11 +90,9 @@ public class ReportService {
         try (java.util.stream.Stream<Path> files = Files.list(targetDir)) {
             return files
                 .filter(Files::isRegularFile)
-                .map(Path::getFileName)
-                .map(Path::toString)
-                .filter(name -> !registered.contains(name.toLowerCase(Locale.ROOT)))
-                .sorted(String.CASE_INSENSITIVE_ORDER)
-                .map(name -> new FolderResource(name, folderPrefix + name))
+                .filter(path -> !registered.contains(path.getFileName().toString().toLowerCase(Locale.ROOT)))
+                .sorted(Comparator.comparing(path -> path.getFileName().toString(), String.CASE_INSENSITIVE_ORDER))
+                .map(path -> toFolderResource(path, folderPrefix))
                 .toList();
         }
     }
@@ -131,17 +131,30 @@ public class ReportService {
         boolean isJrxml   = fileName.toLowerCase().endsWith(".jrxml");
         boolean isJasper  = fileName.toLowerCase().endsWith(".jasper");
         if (!isJrxml && !isJasper) {
-            log.info("Recurso '{}' salvo em: {}", fileName, relativePath);
+            log.info("Recurso '{}' atualizado em: {}", fileName, relativePath);
             return null; // recurso de suporte (imagem, fonte) — sem entrada no BD
         }
 
-        ReportDefinition report = new ReportDefinition();
-        report.setName(name != null && !name.isBlank() ? name : stripExtension(fileName));
-        report.setDescription(description);
-        report.setJrxmlPath(relativePath);
-        report.setFolder(folder);
+        ReportDefinition report = repository.findByJrxmlPath(relativePath).orElseGet(ReportDefinition::new);
+        boolean isUpdate = report.getId() != null;
 
-        log.info("Relatório '{}' salvo em: {}", report.getName(), relativePath);
+        if (!isUpdate) {
+            report.setName(name != null && !name.isBlank() ? name : stripExtension(fileName));
+            report.setDescription(description);
+            report.setJrxmlPath(relativePath);
+            report.setFolder(folder);
+            log.info("Relatório '{}' criado em: {}", report.getName(), relativePath);
+        } else {
+            if (name != null && !name.isBlank()) {
+                report.setName(name);
+            }
+            if (description != null && !description.isBlank()) {
+                report.setDescription(description);
+            }
+            evictCache(report);
+            log.info("Relatório '{}' reenviado em: {}", report.getName(), relativePath);
+        }
+
         return repository.save(report);
     }
 
@@ -183,6 +196,38 @@ public class ReportService {
             .orElseThrow(() -> new IllegalArgumentException("Relatório não encontrado: " + id));
         report.setFolder(targetFolder);
         repository.save(report);
+    }
+
+    /** Remove do disco a árvore de arquivos da pasta (inclui subpastas e recursos sem entrada no BD). */
+    public void deleteFolderTreeFromDisk(Long folderId) throws IOException {
+        if (!folderRepository.existsById(folderId)) {
+            throw new IllegalArgumentException("Pasta não encontrada: " + folderId);
+        }
+
+        String relativePath = buildFolderPath(folderId);
+        if (relativePath.isBlank()) {
+            return;
+        }
+
+        Path dir = resolveReportsRoot().resolve(relativePath);
+        if (!Files.exists(dir)) {
+            log.info("Diretório físico inexistente ao excluir pasta {}: {}", folderId, dir);
+            return;
+        }
+
+        evictCacheUnder(dir);
+
+        try (java.util.stream.Stream<Path> walk = Files.walk(dir)) {
+            walk.sorted(Comparator.reverseOrder()).forEach(path -> {
+                try {
+                    Files.deleteIfExists(path);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        }
+
+        log.info("Diretório físico da pasta {} removido: {}", folderId, dir);
     }
 
     public void delete(Long id) {
@@ -492,6 +537,11 @@ public class ReportService {
         REPORT_CACHE.remove(absolutePath);
     }
 
+    private void evictCacheUnder(Path directory) {
+        String prefix = directory.toAbsolutePath().toString();
+        REPORT_CACHE.keySet().removeIf(key -> key.startsWith(prefix));
+    }
+
     /**
      * Constrói o caminho relativo da pasta a partir dos nomes (não IDs),
      * preservando hierarquia: "pai/filho/neto".
@@ -556,6 +606,17 @@ public class ReportService {
         }
 
         return null;
+    }
+
+    private FolderResource toFolderResource(Path path, String folderPrefix) {
+        try {
+            String name = path.getFileName().toString();
+            LocalDateTime modified = AppTimeZone.fromInstant(
+                Files.getLastModifiedTime(path).toInstant());
+            return new FolderResource(name, folderPrefix + name, modified);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private String buildFolderPath(ReportFolder folder) {

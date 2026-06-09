@@ -153,7 +153,7 @@
                             </td>
                             <td class="text-muted small" th:text="${report.description}"></td>
                             <td class="text-muted small"
-                                th:text="${#temporals.format(report.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                                th:text="${T(com.seudominio.jasperrunner.util.AppTimeZone).formatStoredUtc(report.displayDate)}"></td>
                             <td>
                                 <a th:href="@{'/reports/' + ${report.id} + '/params'}"
                                    class="btn btn-sm btn-primary py-0 px-2" title="Executar"
@@ -177,7 +177,8 @@
                                 <span th:text="${res.fileName}">logo.png</span>
                             </td>
                             <td class="text-muted small">—</td>
-                            <td class="text-muted small">—</td>
+                            <td class="text-muted small"
+                                th:text="${T(com.seudominio.jasperrunner.util.AppTimeZone).formatLocal(res.lastModified)}"></td>
                             <td></td>
                         </tr>
                     </tbody>
@@ -593,29 +594,49 @@
     });
 
     uploadForm.addEventListener('submit', async (e) => {
-        if (uploadFiles.length <= 1) return;
-
         e.preventDefault();
+
         const csrfParam = /*[[${_csrf.parameterName}]]*/ '_csrf';
         const csrfToken = /*[[${_csrf.token}]]*/ '';
         const folderId  = document.getElementById('uploadFolderId').value;
         const action    = uploadForm.action;
         const originalLabel = uploadSubmitBtn.innerHTML;
 
+        const filesToSend = uploadFiles.length > 0
+            ? uploadFiles
+            : Array.from(uploadFileInput.files);
+
+        if (filesToSend.length === 0) {
+            showToast('Selecione pelo menos um arquivo.', 'warning');
+            return;
+        }
+
         uploadSubmitBtn.disabled = true;
         let uploaded = 0;
 
-        for (const file of uploadFiles) {
-            uploadSubmitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>${++uploaded}/${uploadFiles.length}`;
+        for (const file of filesToSend) {
+            uploadSubmitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>${++uploaded}/${filesToSend.length}`;
             const fd = new FormData();
             fd.append('file', file);
             fd.append(csrfParam, csrfToken);
-            fd.append('name', stripExtension(file.name));
+            if (filesToSend.length === 1) {
+                const name = uploadNameInput.value.trim();
+                const desc = uploadDescInput.value.trim();
+                if (name) fd.append('name', name);
+                else fd.append('name', stripExtension(file.name));
+                if (desc) fd.append('description', desc);
+            } else {
+                fd.append('name', stripExtension(file.name));
+            }
             if (folderId) fd.append('folderId', folderId);
 
-            const resp = await fetch(action, { method: 'POST', body: fd });
+            const resp = await fetch(action, {
+                method: 'POST',
+                body: fd,
+                credentials: 'same-origin'
+            });
             if (!resp.ok) {
-                showToast('Erro ao enviar "' + file.name + '".', 'danger');
+                showToast('Erro ao enviar "' + file.name + '" (HTTP ' + resp.status + ').', 'danger');
                 uploadSubmitBtn.disabled = false;
                 uploadSubmitBtn.innerHTML = originalLabel;
                 return;

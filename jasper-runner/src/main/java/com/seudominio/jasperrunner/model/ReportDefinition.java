@@ -2,6 +2,8 @@ package com.seudominio.jasperrunner.model;
 
 import jakarta.persistence.*;
 
+import com.seudominio.jasperrunner.util.AppTimeZone;
+
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -35,13 +37,13 @@ public class ReportDefinition {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        createdAt = AppTimeZone.nowUtc();
+        updatedAt = AppTimeZone.nowUtc();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = AppTimeZone.nowUtc();
     }
 
     public Long getId() { return id; }
@@ -70,6 +72,11 @@ public class ReportDefinition {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    /** Data exibida no grid: última alteração, ou criação se ainda não houve update. */
+    public LocalDateTime getDisplayDate() {
+        return updatedAt != null ? updatedAt : createdAt;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -36,6 +36,7 @@ public class SecurityConfig {
                                                       DatabaseUserDetailsService userDetailsService) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/health").permitAll()
                 .requestMatchers("/webjars/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                 .requestMatchers("/login", "/login?logout", "/login?error").permitAll()
                 .requestMatchers("/password/forgot", "/password/reset").permitAll()

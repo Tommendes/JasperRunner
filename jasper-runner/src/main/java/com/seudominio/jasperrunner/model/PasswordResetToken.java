@@ -1,5 +1,6 @@
 package com.seudominio.jasperrunner.model;
 
+import com.seudominio.jasperrunner.util.AppTimeZone;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -41,7 +42,7 @@ public class PasswordResetToken {
     public void setUsedAt(LocalDateTime usedAt) { this.usedAt = usedAt; }
 
     public boolean isExpired() {
-        return LocalDateTime.now().isAfter(expiresAt);
+        return AppTimeZone.nowUtc().isAfter(expiresAt);
     }
 
     public boolean isUsed() {

@@ -47,7 +47,7 @@
                         <td class="small" th:text="${ds.url}"></td>
                         <td class="small text-muted" th:text="${ds.username}"></td>
                         <td class="small text-muted"
-                            th:text="${#temporals.format(ds.createdAt, 'dd/MM/yyyy')}"></td>
+                            th:text="${T(com.seudominio.jasperrunner.util.AppTimeZone).formatStoredUtc(ds.createdAt)}"></td>
                         <td>
                             <!-- Testar Conexão -->
                             <button class="btn btn-sm btn-outline-info py-0 px-2"

@@ -1,5 +1,6 @@
 package com.seudominio.jasperrunner.model;
 
+import com.seudominio.jasperrunner.util.AppTimeZone;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -40,13 +41,13 @@ public class ReportFolder {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        createdAt = AppTimeZone.nowUtc();
+        updatedAt = AppTimeZone.nowUtc();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = AppTimeZone.nowUtc();
     }
 
     public Long getId() { return id; }

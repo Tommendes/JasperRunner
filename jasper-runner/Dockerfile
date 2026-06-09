@@ -15,7 +15,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 ENV JPA_DATABASE_PLATFORM=org.hibernate.dialect.MariaDBDialect
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
+    && apt-get install -y --no-install-recommends curl gosu \
     && rm -rf /var/lib/apt/lists/* \
     && addgroup --system appgroup \
     && adduser --system --ingroup appgroup appuser
@@ -23,14 +23,19 @@ RUN apt-get update \
 COPY --from=build /workspace/target/jasper-runner-1.0.0.jar /app/jasper-runner.jar
 COPY src/main/resources/application.yml /app/application.yml
 COPY src/main/resources/jasperreports.properties /app/jasperreports.properties
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
-RUN mkdir -p /app/reports /app/logs && chown -R appuser:appgroup /app
+RUN mkdir -p /app/reports /app/logs \
+    && chown -R appuser:appgroup /app \
+    && chmod +x /docker-entrypoint.sh
 
-USER appuser
+ENV TZ=America/Recife
+ENV JASPERRUNNER_REPORTS_ROOT_PATH=/app/reports
+ENV LOGGING_FILE_NAME=/app/logs/jasper-runner.log
 
 EXPOSE 8090
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=5 \
-  CMD curl -fsS http://127.0.0.1:8090/login >/dev/null || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=5 \
+  CMD curl -fsS http://127.0.0.1:8090/health >/dev/null || exit 1
 
-ENTRYPOINT ["java","-jar","/app/jasper-runner.jar","--spring.config.additional-location=file:/app/application.yml"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

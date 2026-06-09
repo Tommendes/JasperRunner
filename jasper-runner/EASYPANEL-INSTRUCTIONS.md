@@ -114,6 +114,8 @@ Configure o domínio no EasyPanel (ex: `relatorios.seudominio.com`) e ative HTTP
 | App não sobe / erro de conexão | Verifique `DB_HOST`, `DB_PORT` e se o MySQL está acessível na rede interna |
 | `Unknown column 'RESERVED'` / erro de Dialect | Já corrigido no Dockerfile; confirme redeploy com código atual |
 | Tabelas / admin não criados | App precisa subir até o fim; nos logs deve aparecer `Usuário admin inicial criado`. Tabela: `app_users` |
+| `SpringApplicationShutdownHook` logo após subir | Container recebeu SIGTERM (health check ou redeploy). Confirme que a app fica **Running** e use `/health` |
+| Upload não salva arquivos | Volume em `/app/reports` precisa existir; o entrypoint corrige permissões automaticamente |
 | Relatórios sumiram após redeploy | Configure volume em `/app/reports` |
 | Fonte Calibri ausente | Já mitigado em `jasperreports.properties`; use DejaVu Sans ou instale a fonte |
 | Subrelatório não encontrado | Verifique caminhos relativos no JRXML e se os arquivos estão em `/app/reports` |

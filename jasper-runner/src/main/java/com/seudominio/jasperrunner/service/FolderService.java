@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +15,11 @@ import java.util.Optional;
 public class FolderService {
 
     private final ReportFolderRepository repository;
+    private final ReportService reportService;
 
-    public FolderService(ReportFolderRepository repository) {
+    public FolderService(ReportFolderRepository repository, ReportService reportService) {
         this.repository = repository;
+        this.reportService = reportService;
     }
 
     @Transactional(readOnly = true)
@@ -77,7 +80,8 @@ public class FolderService {
         repository.save(folder);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id) throws IOException {
+        reportService.deleteFolderTreeFromDisk(id);
         repository.deleteById(id);
     }
 

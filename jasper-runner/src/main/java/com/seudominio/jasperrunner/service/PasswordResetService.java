@@ -5,6 +5,7 @@ import com.seudominio.jasperrunner.model.PasswordResetToken;
 import com.seudominio.jasperrunner.model.User;
 import com.seudominio.jasperrunner.repository.PasswordResetTokenRepository;
 import com.seudominio.jasperrunner.repository.UserRepository;
+import com.seudominio.jasperrunner.util.AppTimeZone;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +52,7 @@ public class PasswordResetService {
         PasswordResetToken token = new PasswordResetToken();
         token.setUserId(user.getId());
         token.setToken(UUID.randomUUID().toString());
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(properties.getPasswordResetExpirationMinutes()));
+        token.setExpiresAt(AppTimeZone.nowUtc().plusMinutes(properties.getPasswordResetExpirationMinutes()));
         tokenRepository.save(token);
 
         String resetLink = properties.getBaseUrl().replaceAll("/$", "")
@@ -74,7 +75,7 @@ public class PasswordResetService {
 
         userService.resetPassword(token.getUserId(), newPassword);
 
-        token.setUsedAt(LocalDateTime.now());
+        token.setUsedAt(AppTimeZone.nowUtc());
         tokenRepository.save(token);
     }
 }

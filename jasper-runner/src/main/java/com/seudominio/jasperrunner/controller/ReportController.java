@@ -97,7 +97,7 @@ public class ReportController {
             } else {
                 ra.addFlashAttribute("success", "Recurso '" + file.getOriginalFilename() + "' enviado com sucesso!");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Erro no upload de relatório", e);
             ra.addFlashAttribute("error", "Erro ao salvar arquivo: " + e.getMessage());
         }
