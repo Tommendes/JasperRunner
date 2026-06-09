@@ -1,190 +1,126 @@
-# Instalação do JasperRunner no EasyPanel
+# JasperRunner no EasyPanel
 
-Este guia mostra como publicar o JasperRunner no EasyPanel usando Docker, com persistência de dados e configuração de produção.
+Guia rápido para publicar o JasperRunner como container Docker no EasyPanel.
 
-## 1) Pré-requisitos
+> **Java:** já vem instalado no container (`eclipse-temurin:17-jre`). Não é preciso Java no servidor host.
 
-- EasyPanel funcionando no servidor
-- Domínio (opcional) apontando para o servidor
-- Projeto JasperRunner versionado no Git (GitHub/GitLab) ou disponível localmente para build
-- Banco externo para relatórios (MySQL/PostgreSQL/SQL Server), se aplicável
+---
 
-## 2) Estrutura persistente recomendada
+## 1. Configurar fonte Git
 
-No container, a aplicação usa por padrão:
+| Campo | Valor |
+|-------|-------|
+| Proprietário | `Tommendes` |
+| Repositório | `JasperRunner` |
+| Ramo | `main` |
+| **Caminho de Build** | **`/jasper-runner`** |
+| Tipo de build | Dockerfile |
 
-- `./data` (H2 da aplicação)
-- `./reports` (JRXML/JASPER e recursos)
-- `./logs` (logs)
+O `Dockerfile` fica em `jasper-runner/Dockerfile` na raiz do repositório — por isso o caminho de build **não** é `/`.
 
-No EasyPanel, mapeie para volumes persistentes:
+**Porta interna do container:** `8090`
 
-- `/app/data`
-- `/app/reports`
-- `/app/logs`
+---
 
-## 3) Dockerfile para EasyPanel
+## 2. Banco MySQL (obrigatório)
 
-Crie um arquivo `Dockerfile` na raiz do projeto com o conteúdo abaixo:
+Os metadados da aplicação (usuários, pastas, relatórios, datasources) ficam em **MySQL**.
 
-```dockerfile
-FROM maven:3.9.9-eclipse-temurin-17 AS build
-WORKDIR /src
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
+Crie um serviço MySQL no EasyPanel (ou use um banco externo) e configure as variáveis de ambiente no app:
 
-FROM eclipse-temurin:17-jre
-WORKDIR /app
+| Variável | Exemplo |
+|----------|---------|
+| `DB_HOST` | nome do serviço MySQL no EasyPanel (ex: `mysql`) |
+| `DB_PORT` | `3306` |
+| `DB_DATABASE` | `jasper_runner` |
+| `DB_USER` | `jasper` |
+| `DB_PASSWORD` | senha forte |
 
-# Pasta de runtime
-RUN mkdir -p /app/data /app/reports /app/logs
+Crie o banco antes do primeiro deploy:
 
-# Jar final
-COPY --from=build /src/target/jasper-runner-1.0.0.jar /app/jasper-runner.jar
-
-# application.yml default (pode ser sobrescrito por variaveis)
-COPY src/main/resources/application.yml /app/application.yml
-COPY src/main/resources/jasperreports.properties /app/jasperreports.properties
-
-EXPOSE 8090
-
-ENTRYPOINT ["java","-jar","/app/jasper-runner.jar","--spring.config.location=file:/app/application.yml"]
+```sql
+CREATE DATABASE jasper_runner CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-## 4) Criar app no EasyPanel
+O Hibernate cria as tabelas automaticamente (`ddl-auto: update`).
 
-No EasyPanel:
+---
 
-1. Crie um novo projeto/app
-2. Escolha deploy via Git
-3. Selecione o repositório do JasperRunner
-4. Build Type: Dockerfile
-5. Porta interna: `8090`
-6. Domínio: configure se desejar (ex: `relatorios.seudominio.com`)
+## 3. Variáveis de ambiente (produção)
 
-## 5) Variáveis de ambiente importantes
+Além do MySQL, configure no EasyPanel:
 
-Você pode manter `application.yml` no container ou parametrizar via env vars do Spring.
+| Variável | Descrição |
+|----------|-----------|
+| `APP_BASE_URL` | URL pública (ex: `https://relatorios.seudominio.com`) |
+| `JASPERRUNNER_ADMIN_PASSWORD` | Senha do admin (padrão: `changeme`) |
+| `JASPERRUNNER_ENCRYPTION_KEY` | Chave AES para senhas JDBC (mín. 16 caracteres) |
+| `JASPERRUNNER_REPORTS_ROOT_PATH` | `/app/reports` |
+| `LOGGING_FILE_NAME` | `/app/logs/jasper-runner.log` |
 
-Sugestão de env vars no EasyPanel:
+### E-mail (opcional — recuperação de senha)
 
-- `SERVER_PORT=8090`
-- `SPRING_DATASOURCE_URL=jdbc:h2:file:/app/data/jasperrunner`
-- `SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver`
-- `SPRING_DATASOURCE_USERNAME=sa`
-- `SPRING_DATASOURCE_PASSWORD=`
-- `JASPERRUNNER_REPORTS_ROOT_PATH=/app/reports`
-- `JASPERRUNNER_ADMIN_USER=admin`
-- `JASPERRUNNER_ADMIN_PASSWORD=troque_esta_senha`
-- `JASPERRUNNER_ENCRYPTION_KEY=troque_chave_forte_aqui_32_chars`
-- `LOGGING_FILE_NAME=/app/logs/jasper-runner.log`
-- `SPRING_THYMELEAF_CACHE=false`
+| Variável | Exemplo |
+|----------|---------|
+| `MAILER_HOST` | `smtp.hostinger.com` |
+| `MAILER_PORT` | `465` |
+| `MAILER_SECURE` | `true` |
+| `MAILER_USER` | `seu@email.com` |
+| `MAILER_PASS` | senha SMTP |
 
-Se usar env vars, ajuste o `ENTRYPOINT` para:
+---
 
-```dockerfile
-ENTRYPOINT ["java","-jar","/app/jasper-runner.jar"]
-```
+## 4. Volumes persistentes
 
-## 6) Volumes persistentes no EasyPanel
+Mapeie no EasyPanel para não perder dados em redeploy:
 
-Adicione mapeamentos:
+| Volume | Caminho no container |
+|--------|---------------------|
+| `jasperrunner-reports` | `/app/reports` |
+| `jasperrunner-logs` | `/app/logs` |
 
-- Volume `jasperrunner-data` -> `/app/data`
-- Volume `jasperrunner-reports` -> `/app/reports`
-- Volume `jasperrunner-logs` -> `/app/logs`
+---
 
-Assim os dados nao se perdem em redeploy.
+## 5. Domínio e HTTPS
 
-## 7) Healthcheck (recomendado)
+Configure o domínio no EasyPanel (ex: `relatorios.seudominio.com`) e ative HTTPS. Atualize `APP_BASE_URL` com a URL final.
 
-Adicione no EasyPanel (se suportado) ou no Dockerfile:
+---
 
-```dockerfile
-HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=5 \
-  CMD wget -qO- http://127.0.0.1:8090/login >/dev/null || exit 1
-```
+## 6. Primeiro acesso
 
-## 8) Primeiro acesso
+- **URL:** seu domínio ou IP do servidor
+- **Login padrão:** `admin` / `changeme`
+- Troque a senha imediatamente via `JASPERRUNNER_ADMIN_PASSWORD` ou pelo menu **Perfil**
 
-- URL: `http://seu-dominio-ou-ip:8090`
-- Login padrão: `admin / changeme` (ou conforme env)
+---
 
-Troque imediatamente:
+## 7. Atualizar após mudanças no código
 
-- `JASPERRUNNER_ADMIN_PASSWORD`
-- `JASPERRUNNER_ENCRYPTION_KEY`
+1. `git push` para `main`
+2. No EasyPanel: **Redeploy**
+3. Verifique os logs do container
 
-## 9) Upload de relatórios e recursos
+---
 
-Após subir:
+## 8. Troubleshooting
 
-1. Crie pastas no repositório interno (UI)
-2. Faça upload de `.jrxml`, `.jasper`, imagens e recursos
-3. Cadastre Data Source JDBC
-4. Teste conexão
-5. Execute relatório
+| Problema | Solução |
+|----------|---------|
+| Build falha com "pom.xml not found" | Caminho de Build deve ser `/jasper-runner` |
+| App não sobe / erro de conexão | Verifique `DB_HOST`, `DB_PORT` e se o MySQL está acessível na rede interna |
+| Relatórios sumiram após redeploy | Configure volume em `/app/reports` |
+| Fonte Calibri ausente | Já mitigado em `jasperreports.properties`; use DejaVu Sans ou instale a fonte |
+| Subrelatório não encontrado | Verifique caminhos relativos no JRXML e se os arquivos estão em `/app/reports` |
 
-## 10) Dependências já tratadas no projeto
+---
 
-Seu projeto já inclui libs necessárias para cenários comuns:
+## Checklist
 
-- Barcode4J
-- ZXing
-- Batik (SVG)
-- JasperReports + exportadores
-
-Se surgir `ClassNotFoundException`, verifique no log qual classe faltou e adicione no `pom.xml`.
-
-## 11) Troubleshooting rápido
-
-### Erro de fonte (Calibri não encontrada)
-
-Já foi mitigado com `jasperreports.properties`:
-
-- `net.sf.jasperreports.awt.ignore.missing.font=true`
-- fallback para `DejaVu Sans`
-
-Se quiser fidelidade visual exata, instale fontes Microsoft no host/container.
-
-### Subrelatório não encontrado
-
-Verifique:
-
-- Caminho relativo no JRXML (`../templates/...`)
-- Se o arquivo existe em `/app/reports/...`
-- Se o upload do recurso foi feito
-
-### Falha de conexão JDBC
-
-- Driver correto no Data Source
-- URL/porta/liberação de firewall
-- Usuário/senha
-
-## 12) Fluxo de atualização no EasyPanel
-
-1. Commit/push no repositório
-2. No EasyPanel, clique em Redeploy
-3. Aguarde build + start
-4. Verifique logs
-5. Valide execução de um relatório de teste
-
-## 13) Segurança mínima recomendada em produção
-
-- Use HTTPS no domínio
-- Altere credenciais padrão
-- Restrinja acesso por IP se possível
-- Faça backup periódico dos volumes:
-  - `/app/data`
-  - `/app/reports`
-  - `/app/logs`
-
-## 14) Checklist final
-
-- App online em `:8090` (ou via domínio)
-- Login funcionando
-- Data Source criado e testado
-- Relatório com subrelatório gerando PDF
-- Volumes persistentes configurados
-- Senhas/chaves de produção aplicadas
+- [ ] Caminho de Build: `/jasper-runner`
+- [ ] Porta: `8090`
+- [ ] MySQL criado e variáveis `DB_*` configuradas
+- [ ] `JASPERRUNNER_ADMIN_PASSWORD` e `JASPERRUNNER_ENCRYPTION_KEY` alterados
+- [ ] Volumes em `/app/reports` e `/app/logs`
+- [ ] `APP_BASE_URL` com URL pública correta
+- [ ] Login e execução de um relatório de teste OK

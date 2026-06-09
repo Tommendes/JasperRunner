@@ -3,3 +3,4 @@ jasper-runner/.env
 jasper-runner/.env.local
 jasper-runner/.env.*
 !jasper-runner/.env.example
+jasper-runner/logs/*
