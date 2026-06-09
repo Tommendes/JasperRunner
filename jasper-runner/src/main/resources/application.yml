@@ -8,6 +8,8 @@ spring:
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:}
   jpa:
+    # Evita falha de auto-detecção com MariaDB (Easypanel): "Unknown column 'RESERVED'"
+    database-platform: ${JPA_DATABASE_PLATFORM:org.hibernate.dialect.MySQLDialect}
     hibernate:
       ddl-auto: update
     show-sql: false
