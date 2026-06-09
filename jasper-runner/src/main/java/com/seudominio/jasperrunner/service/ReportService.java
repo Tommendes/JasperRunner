@@ -7,6 +7,7 @@ import com.seudominio.jasperrunner.model.DataSourceConfig;
 import com.seudominio.jasperrunner.model.ReportDefinition;
 import com.seudominio.jasperrunner.model.ReportFolder;
 import com.seudominio.jasperrunner.repository.ReportDefinitionRepository;
+import com.seudominio.jasperrunner.repository.ReportFolderRepository;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
@@ -45,13 +46,16 @@ public class ReportService {
     private static final Map<String, JasperReport> REPORT_CACHE = new ConcurrentHashMap<>();
 
     private final ReportDefinitionRepository repository;
+    private final ReportFolderRepository folderRepository;
     private final DatasourceService datasourceService;
     private final JasperRunnerProperties properties;
 
     public ReportService(ReportDefinitionRepository repository,
+                         ReportFolderRepository folderRepository,
                          DatasourceService datasourceService,
                          JasperRunnerProperties properties) {
         this.repository = repository;
+        this.folderRepository = folderRepository;
         this.datasourceService = datasourceService;
         this.properties = properties;
     }
@@ -96,6 +100,16 @@ public class ReportService {
     @Transactional(readOnly = true)
     public Optional<ReportDefinition> findById(Long id) {
         return repository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<ReportDefinition> findByIdWithFolder(Long id) {
+        return repository.findByIdWithFolder(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Long> findFolderIdByReportId(Long reportId) {
+        return repository.findFolderIdByReportId(reportId);
     }
 
     public ReportDefinition upload(MultipartFile file, String name, String description,
@@ -545,12 +559,19 @@ public class ReportService {
     }
 
     private String buildFolderPath(ReportFolder folder) {
-        if (folder == null) return "";
+        return folder == null ? "" : buildFolderPath(folder.getId());
+    }
+
+    /** Monta o caminho no disco sem acessar proxies lazy de parent (open-in-view=false). */
+    private String buildFolderPath(Long folderId) {
         Deque<String> parts = new ArrayDeque<>();
-        ReportFolder current = folder;
-        while (current != null) {
+        Long currentId = folderId;
+        while (currentId != null) {
+            Long id = currentId;
+            ReportFolder current = folderRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Pasta não encontrada: " + id));
             parts.addFirst(current.getName().replaceAll("[^a-zA-Z0-9._\\-]", "_"));
-            current = current.getParent();
+            currentId = folderRepository.findParentIdById(currentId).orElse(null);
         }
         return String.join("/", parts);
     }

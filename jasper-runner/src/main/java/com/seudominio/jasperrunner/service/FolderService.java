@@ -34,6 +34,11 @@ public class FolderService {
         return repository.findById(id);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Long> findParentId(Long id) {
+        return repository.findParentIdById(id);
+    }
+
     public ReportFolder create(String name, String description, Long parentId) {
         ReportFolder folder = new ReportFolder();
         folder.setName(name);
@@ -79,9 +84,8 @@ public class FolderService {
     /** Verifica se {@code ancestorId} é ancestral de {@code candidateId}. */
     private boolean isAncestorOf(Long ancestorId, Long candidateId) {
         if (ancestorId.equals(candidateId)) return true;
-        return repository.findById(candidateId)
-            .filter(f -> f.getParent() != null)
-            .map(f -> isAncestorOf(ancestorId, f.getParent().getId()))
+        return repository.findParentIdById(candidateId)
+            .map(parentId -> isAncestorOf(ancestorId, parentId))
             .orElse(false);
     }
 }

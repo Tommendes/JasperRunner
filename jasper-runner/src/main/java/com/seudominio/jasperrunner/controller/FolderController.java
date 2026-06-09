@@ -52,10 +52,7 @@ public class FolderController {
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes ra) {
         try {
-            Long parentId = service.findById(id)
-                .filter(f -> f.getParent() != null)
-                .map(f -> f.getParent().getId())
-                .orElse(null);
+            Long parentId = service.findParentId(id).orElse(null);
             service.delete(id);
             ra.addFlashAttribute("success", "Pasta excluída com sucesso!");
             return parentId != null ? "redirect:/folders/" + parentId : "redirect:/";

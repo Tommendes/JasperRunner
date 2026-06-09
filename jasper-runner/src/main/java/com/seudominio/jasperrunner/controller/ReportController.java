@@ -108,7 +108,7 @@ public class ReportController {
 
     @GetMapping("/reports/{id}/edit")
     public String showEdit(@PathVariable Long id, Model model, RedirectAttributes ra) {
-        return reportService.findById(id).map(report -> {
+        return reportService.findByIdWithFolder(id).map(report -> {
             model.addAttribute("report", report);
             model.addAttribute("rootFolders", folderService.getRootFolders());
             return "report-form";
@@ -126,7 +126,7 @@ public class ReportController {
         try {
             ReportDefinition report = reportService.updateMetadata(id, name, description);
             ra.addFlashAttribute("success", "Relatório atualizado com sucesso!");
-            Long folderId = report.getFolder() != null ? report.getFolder().getId() : null;
+            Long folderId = reportService.findFolderIdByReportId(id).orElse(null);
             return redirectToFolder(folderId);
         } catch (Exception e) {
             log.error("Erro ao atualizar relatório {}", id, e);
@@ -139,7 +139,7 @@ public class ReportController {
 
     @GetMapping("/reports/{id}/params")
     public String showParams(@PathVariable Long id, Model model, RedirectAttributes ra) {
-        return reportService.findById(id).map(report -> {
+        return reportService.findByIdWithFolder(id).map(report -> {
             try {
                 List<ReportParameterInfo> params = reportService.getParameters(id);
                 List<DataSourceConfig> datasources = datasourceService.findAll();
@@ -195,9 +195,9 @@ public class ReportController {
     @PostMapping("/reports/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes ra) {
         try {
-            ReportDefinition report = reportService.findById(id)
+            reportService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Relatório não encontrado: " + id));
-            Long folderId = report.getFolder() != null ? report.getFolder().getId() : null;
+            Long folderId = reportService.findFolderIdByReportId(id).orElse(null);
             reportService.delete(id);
             ra.addFlashAttribute("success", "Relatório excluído com sucesso!");
             return redirectToFolder(folderId);
