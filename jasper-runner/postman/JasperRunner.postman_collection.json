@@ -1,11 +1,13 @@
 {
   "info": {
     "name": "JasperRunner API",
-    "description": "Collection Postman v2.1 para JasperRunner com exemplos de login, reports e datasources.",
+    "description": "Collection Postman v2.1 para JasperRunner. API REST usa HTTP Basic (apiUser/apiPass). Login de tela usa sessão (pasta Auth Sessao).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8090" },
+    { "key": "apiUser", "value": "admin" },
+    { "key": "apiPass", "value": "changeme" },
     { "key": "username", "value": "admin" },
     { "key": "password", "value": "changeme" },
     { "key": "csrfToken", "value": "" },
@@ -15,7 +17,7 @@
   ],
   "item": [
     {
-      "name": "Auth (Sessao)",
+      "name": "Auth (Sessao Web)",
       "item": [
         {
           "name": "GET /login (captura CSRF)",
@@ -59,11 +61,26 @@
       ]
     },
     {
-      "name": "Reports",
+      "name": "Reports (API Basic)",
       "item": [
+        {
+          "name": "GET /api/reports (sem auth — deve falhar)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reports"
+          }
+        },
         {
           "name": "GET /api/reports",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "GET",
             "url": "{{baseUrl}}/api/reports"
           }
@@ -71,6 +88,13 @@
         {
           "name": "GET /api/reports/{id}",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "GET",
             "url": "{{baseUrl}}/api/reports/{{reportId}}"
           }
@@ -78,6 +102,13 @@
         {
           "name": "POST /api/reports (multipart upload)",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "POST",
             "body": {
               "mode": "formdata",
@@ -94,6 +125,13 @@
         {
           "name": "POST /api/reports/{id}/run",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "POST",
             "header": [
               { "key": "Content-Type", "value": "application/json" }
@@ -108,6 +146,13 @@
         {
           "name": "DELETE /api/reports/{id}",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "DELETE",
             "url": "{{baseUrl}}/api/reports/{{reportId}}"
           }
@@ -115,11 +160,18 @@
       ]
     },
     {
-      "name": "Datasources",
+      "name": "Datasources (API Basic)",
       "item": [
         {
           "name": "GET /api/datasources",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "GET",
             "url": "{{baseUrl}}/api/datasources"
           }
@@ -127,6 +179,13 @@
         {
           "name": "POST /api/datasources",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "POST",
             "header": [
               { "key": "Content-Type", "value": "application/json" }
@@ -141,6 +200,13 @@
         {
           "name": "PUT /api/datasources/{id}",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "PUT",
             "header": [
               { "key": "Content-Type", "value": "application/json" }
@@ -155,6 +221,13 @@
         {
           "name": "POST /api/datasources/{id}/test",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "POST",
             "url": "{{baseUrl}}/api/datasources/{{datasourceId}}/test"
           }
@@ -162,6 +235,13 @@
         {
           "name": "DELETE /api/datasources/{id}",
           "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{apiUser}}", "type": "string" },
+                { "key": "password", "value": "{{apiPass}}", "type": "string" }
+              ]
+            },
             "method": "DELETE",
             "url": "{{baseUrl}}/api/datasources/{{datasourceId}}"
           }

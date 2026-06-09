@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
     <title>Login — JasperRunner</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap-icons/font/bootstrap-icons.css}">
@@ -38,6 +39,13 @@
             Você saiu com sucesso.
         </div>
 
+        <!-- Mensagem de sucesso (ex.: senha redefinida) -->
+        <div th:if="${success}"
+             class="alert alert-success py-2 small" role="alert">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            <span th:text="${success}"></span>
+        </div>
+
         <!-- Formulário -->
         <form th:action="@{/login}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -65,11 +73,17 @@
             <button type="submit" class="btn btn-primary w-100 fw-semibold">
                 <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
             </button>
+
+            <div class="text-center mt-3">
+                <a th:href="@{/password/forgot}" class="small text-decoration-none">
+                    Esqueceu sua senha?
+                </a>
+            </div>
         </form>
 
     </div>
     <div class="card-footer text-center text-muted small py-2 bg-light">
-        JasperRunner &copy; 2024 — Porta
+        JasperRunner &copy; 2026 — Porta
         <span th:text="${@environment.getProperty('server.port', '8090')}">8090</span>
     </div>
 </div>

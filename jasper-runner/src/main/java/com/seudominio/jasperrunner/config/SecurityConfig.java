@@ -1,35 +1,47 @@
 package com.seudominio.jasperrunner.config;
 
+import com.seudominio.jasperrunner.security.DatabaseUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JasperRunnerProperties properties;
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/api/**")
+            .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+            .httpBasic(Customizer.withDefaults())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .csrf(AbstractHttpConfigurer::disable);
 
-    public SecurityConfig(JasperRunnerProperties properties) {
-        this.properties = properties;
+        return http.build();
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Order(2)
+    public SecurityFilterChain webSecurityFilterChain(HttpSecurity http,
+                                                      DatabaseUserDetailsService userDetailsService) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/webjars/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                 .requestMatchers("/login", "/login?logout", "/login?error").permitAll()
+                .requestMatchers("/password/forgot", "/password/reset").permitAll()
                 .anyRequest().authenticated()
             )
+            .userDetailsService(userDetailsService)
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/", true)
@@ -44,9 +56,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .csrf(csrf -> csrf
-                // Desabilitar CSRF para endpoints REST e AJAX de clipboard
                 .ignoringRequestMatchers(
-                    "/api/**",
                     "/reports/*/copy",
                     "/reports/*/cut",
                     "/reports/paste",
@@ -55,16 +65,6 @@ public class SecurityConfig {
             );
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails admin = User.builder()
-            .username(properties.getAdminUser())
-            .password(passwordEncoder().encode(properties.getAdminPassword()))
-            .roles("ADMIN")
-            .build();
-        return new InMemoryUserDetailsManager(admin);
     }
 
     @Bean

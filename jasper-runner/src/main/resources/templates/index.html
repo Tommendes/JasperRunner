@@ -103,8 +103,13 @@
                     <i class="bi bi-file-earmark-bar-graph me-1"></i>
                     <span th:text="${currentFolder != null ? currentFolder.name : 'Raiz'}">Relatórios</span>
                 </span>
-                <span class="badge bg-secondary"
-                      th:text="${#lists.size(reports)} + ' relatório(s)'"></span>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="showJrxmlFilter">
+                        <label class="form-check-label small" for="showJrxmlFilter">Mostrar .jrxml</label>
+                    </div>
+                    <span class="badge bg-secondary" id="reportsCountBadge">0 arquivo(s)</span>
+                </div>
             </div>
             <div class="card-body p-0">
                 <table class="table table-hover align-middle mb-0" id="reportsTable">
@@ -118,16 +123,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:if="${#lists.isEmpty(reports)}">
+                        <tr th:if="${#lists.isEmpty(reports) and #lists.isEmpty(resources)}">
                             <td colspan="5" class="text-center text-muted py-5">
                                 <i class="bi bi-folder2-open fs-2 d-block mb-2"></i>
-                                Nenhum relatório nesta pasta
+                                Nenhum arquivo nesta pasta
+                            </td>
+                        </tr>
+                        <tr id="reportsFilterEmpty" class="d-none">
+                            <td colspan="5" class="text-center text-muted py-5">
+                                <i class="bi bi-funnel fs-2 d-block mb-2"></i>
+                                Nenhum arquivo visível com o filtro atual
                             </td>
                         </tr>
                         <tr th:each="report : ${reports}"
                             th:id="'row-' + ${report.id}"
+                            class="report-row"
+                            th:classappend="${#strings.toLowerCase(report.fileName).endsWith('.jrxml')} ? ' is-jrxml' : ''"
                             th:data-id="${report.id}"
-                            th:data-name="${report.name}"
+                            th:data-name="${report.fileName}"
                             onclick="selectReport(this)"
                             style="cursor:pointer">
                             <td>
@@ -135,22 +148,37 @@
                                        th:value="${report.id}" class="form-check-input">
                             </td>
                             <td>
-                                <i class="bi bi-file-earmark-text text-primary me-1"></i>
-                                <span th:text="${report.name}">Relatório</span>
+                                <th:block th:replace="~{index :: fileIcon(${report.fileName})}"></th:block>
+                                <span th:text="${report.fileName}">relatorio.jrxml</span>
                             </td>
                             <td class="text-muted small" th:text="${report.description}"></td>
                             <td class="text-muted small"
                                 th:text="${#temporals.format(report.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
                             <td>
                                 <a th:href="@{'/reports/' + ${report.id} + '/params'}"
-                                   class="btn btn-sm btn-primary py-0 px-2" title="Executar">
+                                   class="btn btn-sm btn-primary py-0 px-2" title="Executar"
+                                   onclick="event.stopPropagation()">
                                     <i class="bi bi-play-fill"></i>
                                 </a>
                                 <a th:href="@{'/reports/' + ${report.id} + '/edit'}"
-                                   class="btn btn-sm btn-outline-secondary py-0 px-2 ms-1" title="Editar">
+                                   class="btn btn-sm btn-outline-secondary py-0 px-2 ms-1" title="Editar"
+                                   onclick="event.stopPropagation()">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                             </td>
+                        </tr>
+                        <tr th:each="res : ${resources}"
+                            class="report-row resource-row"
+                            th:classappend="${#strings.toLowerCase(res.fileName).endsWith('.jrxml')} ? ' is-jrxml' : ''"
+                            th:data-name="${res.fileName}">
+                            <td></td>
+                            <td>
+                                <th:block th:replace="~{index :: fileIcon(${res.fileName})}"></th:block>
+                                <span th:text="${res.fileName}">logo.png</span>
+                            </td>
+                            <td class="text-muted small">—</td>
+                            <td class="text-muted small">—</td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -158,6 +186,11 @@
         </div>
     </main>
 </div>
+
+<!-- ═══════════════ ÍCONE POR EXTENSÃO ═══════════════ -->
+<th:block th:fragment="fileIcon(fileName)">
+    <i class="bi me-1" th:class="${T(com.seudominio.jasperrunner.util.FileTypeIcons).iconClasses(fileName)}"></i>
+</th:block>
 
 <!-- ═══════════════ ÁRVORE DE PASTAS (FRAGMENT RECURSIVO) ═══════════════ -->
 <th:block th:fragment="folderTree(folders, depth)">
@@ -192,34 +225,44 @@
                 <h5 class="modal-title"><i class="bi bi-upload me-2"></i>Upload de Relatório</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form th:action="@{/reports/upload}" method="post" enctype="multipart/form-data">
+            <form id="uploadForm" th:action="@{/reports/upload}" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold">Arquivo <span class="text-danger">*</span></label>
-                        <input type="file" name="file" class="form-control"
-                               accept=".jrxml,.jasper,.png,.jpg,.jpeg,.svg,.ttf" required>
-                        <div class="form-text">
-                            <strong>.jrxml</strong> — relatório principal &nbsp;|&nbsp;
-                            <strong>.jasper</strong> — subrelatório pré-compilado &nbsp;|&nbsp;
-                            imagens (.png, .jpg, .svg)
+                        <label class="form-label fw-semibold">Arquivo(s) <span class="text-danger">*</span></label>
+                        <div id="uploadDropZone" class="jr-upload-dropzone border border-2 border-dashed rounded p-4 text-center">
+                            <i class="bi bi-cloud-arrow-up fs-1 text-muted d-block mb-2"></i>
+                            <p class="mb-1 text-muted">
+                                Arraste arquivos aqui ou
+                                <span class="text-primary fw-semibold">clique para selecionar</span>
+                            </p>
+                            <p class="form-text mb-0">
+                                <strong>.jrxml</strong> — relatório principal &nbsp;|&nbsp;
+                                <strong>.jasper</strong> — subrelatório pré-compilado &nbsp;|&nbsp;
+                                imagens (.png, .jpg, .svg)
+                            </p>
+                            <input type="file" id="uploadFileInput" name="file" class="d-none" multiple
+                                   accept=".jrxml,.jasper,.png,.jpg,.jpeg,.svg,.ttf" required>
+                            <ul id="uploadFileList" class="list-unstyled mt-3 mb-0 text-start small"></ul>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nome do Relatório</label>
-                        <input type="text" name="name" class="form-control"
-                               placeholder="Deixe em branco para usar o nome do arquivo">
+                    <div id="uploadMetaFields">
+                        <div class="mb-3" id="uploadNameField">
+                            <label class="form-label fw-semibold">Nome do Relatório</label>
+                            <input type="text" id="uploadNameInput" name="name" class="form-control"
+                                   placeholder="Deixe em branco para usar o nome do arquivo">
+                        </div>
+                        <div class="mb-3" id="uploadDescField">
+                            <label class="form-label fw-semibold">Descrição</label>
+                            <textarea id="uploadDescInput" name="description" class="form-control" rows="2"></textarea>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Descrição</label>
-                        <textarea name="description" class="form-control" rows="2"></textarea>
-                    </div>
-                    <input type="hidden" name="folderId"
+                    <input type="hidden" name="folderId" id="uploadFolderId"
                            th:value="${currentFolder != null ? currentFolder.id : ''}">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" id="uploadSubmitBtn" class="btn btn-primary">
                         <i class="bi bi-upload me-1"></i>Enviar
                     </button>
                 </div>
@@ -327,6 +370,44 @@
     let selectedId   = null;
     let selectedName = null;
 
+    function clearReportSelection() {
+        selectedId = selectedName = null;
+        document.querySelectorAll('#reportsTable tbody tr.report-row').forEach(r => {
+            r.classList.remove('table-active');
+            const radio = r.querySelector('input[type=radio]');
+            if (radio) radio.checked = false;
+        });
+        ['btn-run','btn-edit','btn-copy','btn-cut','btn-delete'].forEach(id => {
+            document.getElementById(id).disabled = true;
+        });
+    }
+
+    function applyJrxmlFilter() {
+        const showJrxml = document.getElementById('showJrxmlFilter').checked;
+        let visible = 0;
+
+        document.querySelectorAll('#reportsTable tbody tr.report-row').forEach(row => {
+            const isJrxml = row.classList.contains('is-jrxml');
+            const show = !isJrxml || showJrxml;
+            row.classList.toggle('d-none', !show);
+            if (show) visible++;
+            if (!show && row.dataset.id === selectedId) clearReportSelection();
+        });
+
+        const serverEmpty = document.querySelector('#reportsTable tbody tr:not(.report-row):not(#reportsFilterEmpty)');
+        const filterEmpty = document.getElementById('reportsFilterEmpty');
+        const hasReports  = document.querySelectorAll('#reportsTable tbody tr.report-row').length > 0;
+
+        filterEmpty.classList.toggle('d-none', !hasReports || visible > 0);
+        if (serverEmpty) serverEmpty.classList.toggle('d-none', visible === 0 && hasReports);
+
+        document.getElementById('reportsCountBadge').textContent =
+            visible + ' arquivo' + (visible === 1 ? '' : 's');
+    }
+
+    document.getElementById('showJrxmlFilter').addEventListener('change', applyJrxmlFilter);
+    applyJrxmlFilter();
+
     function selectReport(row) {
         document.querySelectorAll('#reportsTable tbody tr').forEach(r => r.classList.remove('table-active'));
         row.classList.add('table-active');
@@ -405,6 +486,155 @@
         document.body.appendChild(div);
         setTimeout(() => div.remove(), 4000);
     }
+
+    // ─── Upload: drag-and-drop e múltiplos arquivos ───
+    const ACCEPTED_EXT = ['.jrxml', '.jasper', '.png', '.jpg', '.jpeg', '.svg', '.ttf'];
+
+    const uploadForm      = document.getElementById('uploadForm');
+    const uploadDropZone  = document.getElementById('uploadDropZone');
+    const uploadFileInput = document.getElementById('uploadFileInput');
+    const uploadFileList  = document.getElementById('uploadFileList');
+    const uploadMetaFields = document.getElementById('uploadMetaFields');
+    const uploadNameInput = document.getElementById('uploadNameInput');
+    const uploadDescInput = document.getElementById('uploadDescInput');
+    const uploadSubmitBtn = document.getElementById('uploadSubmitBtn');
+    let uploadFiles = [];
+
+    function stripExtension(filename) {
+        const dot = filename.lastIndexOf('.');
+        return dot > 0 ? filename.substring(0, dot) : filename;
+    }
+
+    function isAcceptedFile(file) {
+        const name = file.name.toLowerCase();
+        return ACCEPTED_EXT.some(ext => name.endsWith(ext));
+    }
+
+    function fileIcon(name) {
+        const lower = name.toLowerCase();
+        if (lower.endsWith('.jrxml') || lower.endsWith('.jasper')) return 'bi-file-earmark-bar-graph text-primary';
+        if (lower.endsWith('.ttf')) return 'bi-fonts text-secondary';
+        return 'bi-file-earmark-image text-success';
+    }
+
+    function mergeFiles(incoming) {
+        const map = new Map(uploadFiles.map(f => [f.name + f.size, f]));
+        incoming.filter(isAcceptedFile).forEach(f => map.set(f.name + f.size, f));
+        uploadFiles = Array.from(map.values());
+        syncFileInput();
+        renderFileList();
+        updateMetaFields();
+    }
+
+    function syncFileInput() {
+        const dt = new DataTransfer();
+        uploadFiles.forEach(f => dt.items.add(f));
+        uploadFileInput.files = dt.files;
+        uploadFileInput.required = uploadFiles.length === 0;
+    }
+
+    function renderFileList() {
+        uploadFileList.innerHTML = '';
+        uploadFiles.forEach((file, idx) => {
+            const li = document.createElement('li');
+            li.className = 'upload-file-item';
+            li.innerHTML = `
+                <i class="bi ${fileIcon(file.name)}"></i>
+                <span class="flex-grow-1 text-truncate">${file.name}</span>
+                <button type="button" class="btn btn-sm btn-link text-danger p-0" title="Remover"
+                        data-idx="${idx}"><i class="bi bi-x-lg"></i></button>`;
+            li.querySelector('button').addEventListener('click', (e) => {
+                e.stopPropagation();
+                uploadFiles.splice(idx, 1);
+                syncFileInput();
+                renderFileList();
+                updateMetaFields();
+            });
+            uploadFileList.appendChild(li);
+        });
+    }
+
+    function updateMetaFields() {
+        const multiple = uploadFiles.length > 1;
+        uploadMetaFields.style.display = multiple ? 'none' : '';
+        if (multiple) {
+            uploadNameInput.value = '';
+            uploadDescInput.value = '';
+        }
+    }
+
+    uploadDropZone.addEventListener('click', (e) => {
+        if (e.target.closest('button')) return;
+        uploadFileInput.click();
+    });
+
+    uploadFileInput.addEventListener('change', () => {
+        mergeFiles(Array.from(uploadFileInput.files));
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+        uploadDropZone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadDropZone.classList.add('drag-over');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+        uploadDropZone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            uploadDropZone.classList.remove('drag-over');
+        });
+    });
+
+    uploadDropZone.addEventListener('drop', (e) => {
+        mergeFiles(Array.from(e.dataTransfer.files));
+    });
+
+    uploadForm.addEventListener('submit', async (e) => {
+        if (uploadFiles.length <= 1) return;
+
+        e.preventDefault();
+        const csrfParam = /*[[${_csrf.parameterName}]]*/ '_csrf';
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const folderId  = document.getElementById('uploadFolderId').value;
+        const action    = uploadForm.action;
+        const originalLabel = uploadSubmitBtn.innerHTML;
+
+        uploadSubmitBtn.disabled = true;
+        let uploaded = 0;
+
+        for (const file of uploadFiles) {
+            uploadSubmitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>${++uploaded}/${uploadFiles.length}`;
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append(csrfParam, csrfToken);
+            fd.append('name', stripExtension(file.name));
+            if (folderId) fd.append('folderId', folderId);
+
+            const resp = await fetch(action, { method: 'POST', body: fd });
+            if (!resp.ok) {
+                showToast('Erro ao enviar "' + file.name + '".', 'danger');
+                uploadSubmitBtn.disabled = false;
+                uploadSubmitBtn.innerHTML = originalLabel;
+                return;
+            }
+        }
+
+        location.reload();
+    });
+
+    document.getElementById('uploadModal').addEventListener('hidden.bs.modal', () => {
+        uploadFiles = [];
+        syncFileInput();
+        renderFileList();
+        uploadNameInput.value = '';
+        uploadDescInput.value = '';
+        uploadMetaFields.style.display = '';
+        uploadSubmitBtn.disabled = false;
+        uploadSubmitBtn.innerHTML = '<i class="bi bi-upload me-1"></i>Enviar';
+    });
 
     // Auto-expand pasta ativa na sidebar
     document.querySelectorAll('.jr-folder-item.active').forEach(item => {

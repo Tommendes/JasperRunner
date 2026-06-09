@@ -61,6 +61,12 @@ public class ReportController {
 
         model.addAttribute("currentFolder", currentFolder);
         model.addAttribute("reports", reportService.findByFolder(folderId));
+        try {
+            model.addAttribute("resources", reportService.findResourcesByFolder(currentFolder));
+        } catch (IOException e) {
+            log.warn("Não foi possível listar recursos da pasta", e);
+            model.addAttribute("resources", List.of());
+        }
         model.addAttribute("rootFolders", folderService.getRootFolders());
         model.addAttribute("subFolders", folderId != null
             ? folderService.findChildFolders(folderId)

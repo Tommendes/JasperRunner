@@ -3,29 +3,43 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:file:./data/jasperrunner
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: ''
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_DATABASE:jasper_runner}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
     open-in-view: false
-  h2:
-    console:
-      enabled: false
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
   thymeleaf:
     cache: false
+  mail:
+    host: ${MAILER_HOST:smtp.hostinger.com}
+    port: ${MAILER_PORT:465}
+    username: ${MAILER_USER:}
+    password: ${MAILER_PASS:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: ${MAILER_SECURE:true}
+          starttls:
+            enable: false
 
 jasperrunner:
   reports-root-path: ./reports
   admin-user: admin
   admin-password: changeme
+  admin-name: Administrator
+  admin-email: admin@localhost
+  base-url: ${APP_BASE_URL:http://localhost:8090}
+  password-reset-expiration-minutes: 30
   encryption-key: JasperRunner@2024$SecretKey!
 
 logging:

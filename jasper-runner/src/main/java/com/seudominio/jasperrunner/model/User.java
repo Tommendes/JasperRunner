@@ -2,13 +2,12 @@ package com.seudominio.jasperrunner.model;
 
 import jakarta.persistence.*;
 
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "report_definitions")
-public class ReportDefinition {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,15 +16,21 @@ public class ReportDefinition {
     @Column(nullable = false)
     private String name;
 
-    private String description;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    /** Caminho relativo ao reports-root-path configurado em application.yml */
-    @Column(name = "jrxml_path", nullable = false)
-    private String jrxmlPath;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "folder_id")
-    private ReportFolder folder;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
+
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
+    @Column(nullable = false)
+    private boolean enabled = true;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -50,20 +55,20 @@ public class ReportDefinition {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getJrxmlPath() { return jrxmlPath; }
-    public void setJrxmlPath(String jrxmlPath) { this.jrxmlPath = jrxmlPath; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    /** Nome do arquivo no disco, com extensão (ex.: relatorio.jrxml). */
-    public String getFileName() {
-        if (jrxmlPath == null || jrxmlPath.isBlank()) return name;
-        return Path.of(jrxmlPath).getFileName().toString();
-    }
+    public UserRole getRole() { return role; }
+    public void setRole(UserRole role) { this.role = role; }
 
-    public ReportFolder getFolder() { return folder; }
-    public void setFolder(ReportFolder folder) { this.folder = folder; }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
@@ -74,16 +79,11 @@ public class ReportDefinition {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ReportDefinition)) return false;
-        ReportDefinition that = (ReportDefinition) o;
-        return Objects.equals(id, that.id);
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() { return Objects.hash(id); }
-
-    @Override
-    public String toString() {
-        return "ReportDefinition{id=" + id + ", name='" + name + "'}";
-    }
 }

@@ -1,6 +1,7 @@
 package com.seudominio.jasperrunner.service;
 
 import com.seudominio.jasperrunner.config.JasperRunnerProperties;
+import com.seudominio.jasperrunner.dto.FolderResource;
 import com.seudominio.jasperrunner.dto.ReportParameterInfo;
 import com.seudominio.jasperrunner.model.DataSourceConfig;
 import com.seudominio.jasperrunner.model.ReportDefinition;
@@ -63,6 +64,33 @@ public class ReportService {
         return folderId == null
             ? repository.findByFolderIsNull(sort)
             : repository.findByFolderId(folderId, sort);
+    }
+
+    /** Arquivos no disco da pasta que não possuem entrada no banco (imagens, fontes, etc.). */
+    @Transactional(readOnly = true)
+    public List<FolderResource> findResourcesByFolder(ReportFolder folder) throws IOException {
+        Path targetDir = folder != null
+            ? resolveReportsRoot().resolve(buildFolderPath(folder))
+            : resolveReportsRoot();
+        if (!Files.isDirectory(targetDir)) return List.of();
+
+        Set<String> registered = findByFolder(folder != null ? folder.getId() : null).stream()
+            .map(ReportDefinition::getFileName)
+            .map(name -> name.toLowerCase(Locale.ROOT))
+            .collect(java.util.stream.Collectors.toSet());
+
+        String folderPrefix = folder != null ? buildFolderPath(folder) + "/" : "";
+
+        try (java.util.stream.Stream<Path> files = Files.list(targetDir)) {
+            return files
+                .filter(Files::isRegularFile)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .filter(name -> !registered.contains(name.toLowerCase(Locale.ROOT)))
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .map(name -> new FolderResource(name, folderPrefix + name))
+                .toList();
+        }
     }
 
     @Transactional(readOnly = true)
