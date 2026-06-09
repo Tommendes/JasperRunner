@@ -138,7 +138,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"parameters\": {\n    \"orgao\": \"Nome do Orgao / CNPJ\",\n    \"titulo\": \"Relatorio Geral da Folha de Pagamento\",\n    \"descricao\": \"Folha: 05/2025\",\n    \"dbSchema\": \"wwmgca_tapera_ativos\",\n    \"ano\": \"2026\",\n    \"mes\": \"04\",\n    \"complementar\": \"000\",\n    \"id_cad_servidores\": \"ff.id_cad_servidores in(2427)\",\n    \"id_cad_centros\": \"1=1\",\n    \"id_cad_departamentos\": \"1=1\",\n    \"id_cad_cargos\": \"1=1\",\n    \"id_cad_locais_trabalho\": \"1=1\",\n    \"orderBy\": \"ff.id_cad_centros, cs.nome, cs.matricula\"\n  },\n  \"datasourceId\": {{datasourceId}},\n  \"format\": \"PDF\"\n}"
+              "raw": "{\n  \"parameters\": {\n    \"param1\": \"valor\",\n    \"param2\": \"valor\"\n  },\n  \"datasourceId\": {{datasourceId}},\n  \"format\": \"PDF\"\n}"
             },
             "url": "{{baseUrl}}/api/reports/{{reportId}}/run"
           }
