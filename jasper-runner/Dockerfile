@@ -12,6 +12,7 @@ WORKDIR /app
 
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
+ENV JPA_DATABASE_PLATFORM=org.hibernate.dialect.MariaDBDialect
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
@@ -32,4 +33,4 @@ EXPOSE 8090
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=5 \
   CMD curl -fsS http://127.0.0.1:8090/login >/dev/null || exit 1
 
-ENTRYPOINT ["java","-jar","/app/jasper-runner.jar","--spring.config.location=file:/app/application.yml"]
+ENTRYPOINT ["java","-jar","/app/jasper-runner.jar","--spring.config.additional-location=file:/app/application.yml"]

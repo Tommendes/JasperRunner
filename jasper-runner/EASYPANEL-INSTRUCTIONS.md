@@ -112,7 +112,8 @@ Configure o domínio no EasyPanel (ex: `relatorios.seudominio.com`) e ative HTTP
 |----------|---------|
 | Build falha com "pom.xml not found" | Caminho de Build deve ser `/jasper-runner` |
 | App não sobe / erro de conexão | Verifique `DB_HOST`, `DB_PORT` e se o MySQL está acessível na rede interna |
-| `Unknown column 'RESERVED'` / erro de Dialect | Defina `JPA_DATABASE_PLATFORM=org.hibernate.dialect.MariaDBDialect` |
+| `Unknown column 'RESERVED'` / erro de Dialect | Já corrigido no Dockerfile; confirme redeploy com código atual |
+| Tabelas / admin não criados | App precisa subir até o fim; nos logs deve aparecer `Usuário admin inicial criado`. Tabela: `app_users` |
 | Relatórios sumiram após redeploy | Configure volume em `/app/reports` |
 | Fonte Calibri ausente | Já mitigado em `jasperreports.properties`; use DejaVu Sans ou instale a fonte |
 | Subrelatório não encontrado | Verifique caminhos relativos no JRXML e se os arquivos estão em `/app/reports` |

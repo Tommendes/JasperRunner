@@ -8,12 +8,16 @@ spring:
     username: ${DB_USER:root}
     password: ${DB_PASSWORD:}
   jpa:
-    # Evita falha de auto-detecção com MariaDB (Easypanel): "Unknown column 'RESERVED'"
-    database-platform: ${JPA_DATABASE_PLATFORM:org.hibernate.dialect.MySQLDialect}
+    # MariaDB no Easypanel: evita "Unknown column 'RESERVED'" e falha ao criar tabelas
+    database-platform: ${JPA_DATABASE_PLATFORM:org.hibernate.dialect.MariaDBDialect}
     hibernate:
       ddl-auto: update
     show-sql: false
     open-in-view: false
+    properties:
+      hibernate:
+        boot:
+          allow_jdbc_metadata_access: false
   servlet:
     multipart:
       max-file-size: 50MB
