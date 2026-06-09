@@ -633,16 +633,27 @@
             const resp = await fetch(action, {
                 method: 'POST',
                 body: fd,
-                credentials: 'same-origin'
+                credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
-            if (!resp.ok) {
-                showToast('Erro ao enviar "' + file.name + '" (HTTP ' + resp.status + ').', 'danger');
+            let result;
+            try {
+                result = await resp.json();
+            } catch (err) {
+                showToast('Resposta inválida ao enviar "' + file.name + '".', 'danger');
+                uploadSubmitBtn.disabled = false;
+                uploadSubmitBtn.innerHTML = originalLabel;
+                return;
+            }
+            if (!resp.ok || !result.success) {
+                showToast(result.message || ('Erro ao enviar "' + file.name + '".'), 'danger');
                 uploadSubmitBtn.disabled = false;
                 uploadSubmitBtn.innerHTML = originalLabel;
                 return;
             }
         }
 
+        bootstrap.Modal.getInstance(document.getElementById('uploadModal'))?.hide();
         location.reload();
     });
 

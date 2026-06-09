@@ -79,26 +79,39 @@ public class ReportController {
     // ───────────────────────── Upload de JRXML ───────────────────────────
 
     @PostMapping("/reports/upload")
-    public String upload(@RequestParam("file") MultipartFile file,
+    public Object upload(@RequestParam("file") MultipartFile file,
                          @RequestParam(value = "name", required = false) String name,
                          @RequestParam(value = "description", required = false) String description,
                          @RequestParam(value = "folderId", required = false) Long folderId,
+                         @RequestHeader(value = "X-Requested-With", required = false) String requestedWith,
                          RedirectAttributes ra) {
+        boolean ajax = "XMLHttpRequest".equals(requestedWith);
         try {
             if (file.isEmpty()) {
-                ra.addFlashAttribute("error", "Nenhum arquivo selecionado.");
+                String message = "Nenhum arquivo selecionado.";
+                if (ajax) {
+                    return ResponseEntity.badRequest().body(Map.of("success", false, "message", message));
+                }
+                ra.addFlashAttribute("error", message);
                 return redirectToFolder(folderId);
             }
 
             ReportFolder folder = folderId != null ? folderService.findById(folderId).orElse(null) : null;
             ReportDefinition saved = reportService.upload(file, name, description, folder);
-            if (saved != null) {
-                ra.addFlashAttribute("success", "Relatório '" + saved.getName() + "' enviado com sucesso!");
-            } else {
-                ra.addFlashAttribute("success", "Recurso '" + file.getOriginalFilename() + "' enviado com sucesso!");
+            String message = saved != null
+                ? "Relatório '" + saved.getName() + "' enviado com sucesso!"
+                : "Recurso '" + file.getOriginalFilename() + "' enviado com sucesso!";
+
+            if (ajax) {
+                return ResponseEntity.ok(Map.of("success", true, "message", message));
             }
+            ra.addFlashAttribute("success", message);
         } catch (Exception e) {
             log.error("Erro no upload de relatório", e);
+            if (ajax) {
+                return ResponseEntity.internalServerError()
+                    .body(Map.of("success", false, "message", "Erro ao salvar arquivo: " + e.getMessage()));
+            }
             ra.addFlashAttribute("error", "Erro ao salvar arquivo: " + e.getMessage());
         }
         return redirectToFolder(folderId);
