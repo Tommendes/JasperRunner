@@ -9,3 +9,7 @@ jasper-runner/reports/
 
 # Logs
 jasper-runner/logs/
+
+# IDEs
+.cursor/
+.vscode/
